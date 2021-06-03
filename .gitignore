@@ -401,3 +401,6 @@ FodyWeavers.xsd
 
 # Allow deps
 !dependencies/**/*
+
+# Ignore intermediate
+intermediate/
