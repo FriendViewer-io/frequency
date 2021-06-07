@@ -58,7 +58,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\SDL2;$(SolutionDir)dependencies\include\glew;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\SDL2;$(SolutionDir)dependencies\include\glew;$(SolutionDir)frequency\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -79,7 +79,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\SDL2;$(SolutionDir)dependencies\include\glew;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\SDL2;$(SolutionDir)dependencies\include\glew;$(SolutionDir)frequency\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -94,10 +94,27 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\core\Component.cc" />
+    <ClCompile Include="engine\core\GObject.cc" />
+    <ClCompile Include="engine\core\GOList.cc" />
+    <ClCompile Include="engine\core\ResourceManager.cc" />
+    <ClCompile Include="engine\core\StateManager.cc" />
+    <ClCompile Include="engine\core\Token.cc" />
+    <ClCompile Include="engine\math\Vector.cc" />
     <ClCompile Include="frequency_main.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\core\Component.hh" />
+    <ClInclude Include="engine\core\EngineResource.hh" />
+    <ClInclude Include="engine\core\GObject.hh" />
+    <ClInclude Include="engine\core\GOList.hh" />
+    <ClInclude Include="engine\core\ResourceManager.hh" />
+    <ClInclude Include="engine\core\StateManager.hh" />
+    <ClInclude Include="engine\core\Token.hh" />
+    <ClInclude Include="engine\math\Vector.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
