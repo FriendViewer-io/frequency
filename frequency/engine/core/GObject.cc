@@ -37,6 +37,7 @@ void GObject::on_message(GObject* sender, std::string const& message) {
 }
 
 void GObject::add_component(std::unique_ptr<Component> component) {
+   component->set_parent(this);
    component_list.emplace_back(std::move(component));
 }
 

@@ -27,6 +27,8 @@ public:
    std::string const& get_name() const { return name; }
    int get_id() const { return ID; }
 
+   vec2& get_position() { return position; }
+
 private:
    vec2 position;
    float rotation;
