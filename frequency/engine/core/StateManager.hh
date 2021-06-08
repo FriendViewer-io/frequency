@@ -2,7 +2,11 @@
 
 namespace statemgr {
 enum class EngineState {
-   INACTIVE, PAUSED, ACTIVE, SHUTDOWN
+   UNINITIALIZED,
+   PAUSED,
+   ACTIVE,
+   LEVEL_TRANSITION,
+   SHUTDOWN,
 };
 
 void set_game_state(EngineState state);
