@@ -8,17 +8,14 @@
 #include "engine/core/StateManager.hh"
 #include "engine/math/Vector.hh"
 
-class NatComponent : public Component {
+class TalkingComponent : public Component {
 private:
-   int hunger = 0;
+   int num_ticks = 0;
+
 public:
    void on_tick(float dt) override {
-      hunger++;
-      if (hunger > 100) {
-         parent->broadcast_message("hungry", "I am going to chipotle");
-         hunger = 0;
-         parent->broadcast_message("full", "mm tasty food");
-      }
+      parent->broadcast_message("munt","aaaaah");
+
    }
 
    void on_post_tick(float dt) override {
@@ -28,12 +25,14 @@ public:
    }
    
    void commit(Component const& from) override {
-
    }
 
 };
 
-class AnyoneComponent : public Component {
+class ListeningComponent : public Component {
+private:
+   int num_ticks = 0;
+
 public:
    void on_tick(float dt) override {
    }
@@ -42,11 +41,10 @@ public:
    }
    
    void on_message(GObject* sender, std::string const& msg) override {
-      printf("%s received a message from %s: %s\n", parent->get_name().c_str(), sender->get_name().c_str(), msg.c_str());
+      printf("%s received message %s from %s\n", parent->get_name().c_str(), msg.c_str(), sender->get_name().c_str());
    }
    
    void commit(Component const& from) override {
-
    }
 
 };
@@ -58,34 +56,28 @@ int main() {
    //                  SDL_WINDOW_RESIZABLE);
    // _getch();
 
-   GOList* list = statemgr::get_object_list();
-   
-   GObject* nat_go = new GObject();
-   GObject* andrew_go = new GObject();
-   GObject* sam_go = new GObject();
-   GObject* hzr_go = new GObject();
-   
-   nat_go->init(vec2(0, 0), 0, vec2(1, 1), "nat");
-   andrew_go->init(vec2(0, 0), 0, vec2(1, 1), "andrew");
-   sam_go->init(vec2(0, 0), 0, vec2(1, 1), "sam");
-   hzr_go->init(vec2(0, 0), 0, vec2(1, 1), "hzr");
-   
-   nat_go->add_component(std::move(std::make_unique<NatComponent>()));
-   andrew_go->add_component(std::move(std::make_unique<AnyoneComponent>()));
-   sam_go->add_component(std::move(std::make_unique<AnyoneComponent>()));
-   hzr_go->add_component(std::move(std::make_unique<AnyoneComponent>()));
+   GOList* object_list = statemgr::get_object_list();
 
-   list->add_object(nat_go);
-   list->add_object(andrew_go);
-   list->add_object(sam_go);
-   list->add_object(hzr_go);
+   GObject* ob1 = new GObject;
+   GObject* ob2 = new GObject;
+   GObject* ob3 = new GObject;
 
-   nat_go->add_link(andrew_go, "hungry");
-   nat_go->add_link(andrew_go, "full");
-   nat_go->add_link(sam_go, "hungry");
-   nat_go->add_link(sam_go, "full");
-   nat_go->add_link(hzr_go, "hungry");
-   nat_go->add_link(hzr_go, "full");
+   // testing disable_messaging
+   ob1->init(vec2(),0,vec2(), "adyam", false, false);
+   ob2->init(vec2(),0,vec2(), "nyat", true, false);
+   ob3->init(vec2(),0,vec2(), "joe", false, false);
+
+   ob1->add_component(std::make_unique<ListeningComponent>());
+   ob2->add_component(std::make_unique<ListeningComponent>());
+   ob3->add_component(std::make_unique<TalkingComponent>());
+
+   object_list->add_object(ob1);
+   object_list->add_object(ob2);
+   object_list->add_object(ob3);
+
+   ob3->add_link(ob1, "munt");
+   ob3->add_link(ob2, "munt");
+
 
    statemgr::core_game_loop(1.f / 60.f);
 }

@@ -59,12 +59,27 @@ void core_game_loop(float time_delta) {
 
    while (game_state != EngineState::SHUTDOWN) {
       // pre-tick
-      if (game_state == EngineState::ACTIVE) { 
+      if (game_state == EngineState::ACTIVE) {
          object_list.for_each([time_delta](GObject* obj) { obj->tick(time_delta); });
 
          // post-tick
 
          object_list.for_each([time_delta](GObject* obj) { obj->post_tick(time_delta); });
+      } else if (game_state == EngineState::PAUSED) {
+         // do only some of them
+         object_list.for_each([time_delta](GObject* obj) {
+            if (obj->active_during_pause()) {
+               obj->tick(time_delta);
+            }
+         });
+
+         // post-tick
+
+         object_list.for_each([time_delta](GObject* obj) {
+            if (obj->active_during_pause()) {
+               obj->post_tick(time_delta);
+            }
+         });
       }
       // post-post-tick
 

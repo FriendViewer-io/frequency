@@ -1,14 +1,23 @@
 #include "engine/core/GObject.hh"
 
-GObject::GObject() : position(), rotation(0.f), scale(1, 1), ID(0) {}
+GObject::GObject() : position(), rotation(0.f), scale(1, 1), ID(0), flags(0) {}
 
-void GObject::init(vec2 pos, float rot, vec2 scale, std::string const& name) {
+void GObject::init(vec2 pos, float rot, vec2 scale, std::string const& name, bool disable_messaging,
+                   bool active_during_pause) {
    position = pos;
    rotation = rot;
    this->scale = scale;
    this->name = name;
 
    ID = ID_counter++;
+   flags = 0;     
+
+   if (disable_messaging) {
+      flags |= MESSAGING_DISABLE_FLAG;
+   }
+   if (active_during_pause) {
+      flags |= PAUSE_ACTIVE_FLAG;
+   }
 }
 
 void GObject::tick(float dt) {
@@ -31,6 +40,10 @@ void GObject::destroy() {
 }
 
 void GObject::on_message(GObject* sender, std::string const& message) {
+   if (messaging_disabled()) {
+      return;
+   }
+
    for (auto& comp : component_list) {
       comp->on_message(sender, message);
    }
@@ -65,6 +78,10 @@ void GObject::remove_link(GObject* target, std::string const& state) {
 }
 
 void GObject::broadcast_message(std::string const& state, std::string const& message) {
+   if (messaging_disabled()) {
+      return;
+   }
+   
    auto broadcast_links = links.find(state);
 
    if (broadcast_links == links.end()) {
@@ -78,6 +95,10 @@ void GObject::broadcast_message(std::string const& state, std::string const& mes
 }
 
 void GObject::send_message(GObject* target, std::string const& state, std::string const& message) {
+   if (messaging_disabled()) {
+      return;
+   }
+
    auto send_links = links.find(state);
 
    if (send_links == links.end()) {
@@ -90,4 +111,20 @@ void GObject::send_message(GObject* target, std::string const& state, std::strin
          obj->on_message(this, message);
       }
    }
+}
+
+bool GObject::messaging_disabled() const {
+   return (flags & MESSAGING_DISABLE_FLAG) != 0;
+}
+
+bool GObject::active_during_pause() const {
+   return (flags & PAUSE_ACTIVE_FLAG) != 0;
+}
+
+void GObject::disable_messaging() {
+   flags &= ~MESSAGING_DISABLE_FLAG;
+}
+
+void GObject::enable_messaging() {
+   flags |= MESSAGING_DISABLE_FLAG;
 }
