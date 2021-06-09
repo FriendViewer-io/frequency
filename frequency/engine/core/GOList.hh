@@ -21,6 +21,16 @@ public:
       }
    }
 
+   template <typename T>
+   void remove_if(T&& fn) {
+      for (int i = 0; i < object_list.size(); i++) {
+         if (fn(object_list[i])) {
+            object_list.erase(object_list.begin() + i);
+            i--;
+         }
+      }
+   }
+
 private:
    std::vector<GObject*> object_list;
 };

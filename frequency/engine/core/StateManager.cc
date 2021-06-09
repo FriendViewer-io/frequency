@@ -62,6 +62,8 @@ void core_game_loop(float time_delta) {
       if (game_state == EngineState::ACTIVE) {
          object_list.for_each([time_delta](GObject* obj) { obj->tick(time_delta); });
 
+         object_list.for_each([](GObject* obj) { obj->commit(); });
+
          // post-tick
 
          object_list.for_each([time_delta](GObject* obj) { obj->post_tick(time_delta); });
@@ -73,6 +75,12 @@ void core_game_loop(float time_delta) {
             }
          });
 
+         object_list.for_each([](GObject* obj) {
+            if (obj->active_during_pause()) {
+               obj->commit();
+            }
+         });
+         
          // post-tick
 
          object_list.for_each([time_delta](GObject* obj) {
@@ -82,6 +90,15 @@ void core_game_loop(float time_delta) {
          });
       }
       // post-post-tick
+
+      // loop through object list, delete all components marked as munted
+      object_list.remove_if([](GObject* obj) {
+         if (obj->is_munted()) {
+            delete obj;
+            return true;
+         }
+         return false;
+      });
 
       tick_count++;
       ch::time_point next_tick_start =
