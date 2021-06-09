@@ -5,6 +5,7 @@ GObjectInternal::GObjectInternal() : position(0, 0), rotation(0), scale(1, 1) {}
 GObject::GObject() : old_data(), new_data(), ID(0), flags(0) {}
 
 GObject::~GObject() {
+   enable_messaging();
    broadcast_message("$$destroy", "$$destroy");
 
    for (auto& comp : new_component_list) {
@@ -182,6 +183,6 @@ bool GObject::active_during_pause() const { return (flags & PAUSE_ACTIVE_FLAG) !
 
 bool GObject::is_munted() const { return (flags & PENDING_DESTRUCTION_FLAG) != 0; }
 
-void GObject::disable_messaging() { flags &= ~MESSAGING_DISABLE_FLAG; }
+void GObject::disable_messaging() { flags |= MESSAGING_DISABLE_FLAG; }
 
-void GObject::enable_messaging() { flags |= MESSAGING_DISABLE_FLAG; }
+void GObject::enable_messaging() { flags &= ~MESSAGING_DISABLE_FLAG; }
