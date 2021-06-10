@@ -7,15 +7,6 @@ GObject::GObject() : old_data(), new_data(), ID(0), flags(0) {}
 GObject::~GObject() {
    enable_messaging();
    broadcast_message("$$destroy", "$$destroy");
-
-   for (auto& comp : new_component_list) {
-      comp.reset();
-   }
-   for (auto& comp : old_component_list) {
-      comp.reset();
-   }
-   new_component_list.clear();
-   old_component_list.clear();
 }
 
 void GObject::init(vec2 pos, float rot, vec2 scale, std::string const& name, bool disable_messaging,
@@ -132,6 +123,17 @@ void GObject::remove_all_links(GObject* target) {
    }
 }
 
+void GObject::enqueue_message(GObject* sender, std::string const& message) {
+   message_queue.emplace(sender, message);
+}
+
+void GObject::flush_messages() {
+   while (!message_queue.empty()) {
+      on_message(message_queue.front().first, message_queue.front().second);
+      message_queue.pop();
+   }
+}
+
 void GObject::broadcast_message(std::string const& state, std::string const& message) {
    if (messaging_disabled()) {
       return;
@@ -145,7 +147,7 @@ void GObject::broadcast_message(std::string const& state, std::string const& mes
    }
 
    for (GObject* obj : broadcast_links->second) {
-      obj->on_message(this, message);
+      obj->enqueue_message(this, message);
    }
 }
 
@@ -163,7 +165,7 @@ void GObject::send_message(GObject* target, std::string const& state, std::strin
 
    for (GObject* obj : send_links->second) {
       if (obj == target) {
-         obj->on_message(this, message);
+         obj->enqueue_message(this, message);
       }
    }
 }
@@ -171,7 +173,7 @@ void GObject::send_message(GObject* target, std::string const& state, std::strin
 Component const* GObject::get_component(std::string_view type_name) const {
    for (auto const& comp : old_component_list) {
       if (comp->get_component_type_name() == type_name) {
-         comp.get();
+         return comp.get();
       }
    }
    return nullptr;

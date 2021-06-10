@@ -8,14 +8,15 @@
 #include "engine/core/StateManager.hh"
 #include "engine/math/Vector.hh"
 
-class TalkingComponent : public Component {
-private:
-   int num_ticks = 0;
-
+class WalkingComponent : public Component {
 public:
-   void on_tick(float dt) override {
-      parent->broadcast_message("munt","aaaaah");
+   int counter = 0;
 
+   void on_tick(float dt) override {
+      counter++;
+      parent_data->position.x += 1.f;
+
+      printf("My position: %f, counter %d\n", parent_data->position.x, counter);
    }
 
    void on_post_tick(float dt) override {
@@ -25,16 +26,30 @@ public:
    }
    
    void commit(Component const& from) override {
+      WalkingComponent const& rhs = static_cast<WalkingComponent const&>(from);
+      counter = rhs.counter;
+   }
+
+   std::unique_ptr<Component> clone() override {
+      return std::make_unique<WalkingComponent>();
+   }
+   
+   std::string_view get_component_type_name() const {
+      return "WalkingComponent";
    }
 
 };
 
-class ListeningComponent : public Component {
+class ObserverComponent : public Component {
 private:
    int num_ticks = 0;
 
 public:
    void on_tick(float dt) override {
+      GObject* go = statemgr::get_object_list()->get_object("adyam");
+      WalkingComponent const* wc = static_cast<WalkingComponent const*>(go->get_component("WalkingComponent"));
+
+      printf("Walking guy's position: %f, counter %d\n", go->get_position().x, wc->counter);
    }
 
    void on_post_tick(float dt) override {
@@ -45,6 +60,12 @@ public:
    }
    
    void commit(Component const& from) override {
+   }
+
+   std::unique_ptr<Component> clone() override { return std::make_unique<ObserverComponent>(); }
+   
+   std::string_view get_component_type_name() const {
+      return "ObserverComponent";
    }
 
 };
@@ -60,24 +81,16 @@ int main() {
 
    GObject* ob1 = new GObject;
    GObject* ob2 = new GObject;
-   GObject* ob3 = new GObject;
 
    // testing disable_messaging
-   ob1->init(vec2(),0,vec2(), "adyam", false, false);
-   ob2->init(vec2(),0,vec2(), "nyat", true, false);
-   ob3->init(vec2(),0,vec2(), "joe", false, false);
+   ob1->init(vec2(), 0, vec2(), "adyam", false, false);
+   ob2->init(vec2(), 0, vec2(), "nyat", false, false);
 
-   ob1->add_component(std::make_unique<ListeningComponent>());
-   ob2->add_component(std::make_unique<ListeningComponent>());
-   ob3->add_component(std::make_unique<TalkingComponent>());
+   ob1->add_component(std::make_unique<WalkingComponent>());
+   ob2->add_component(std::make_unique<ObserverComponent>());
 
    object_list->add_object(ob1);
    object_list->add_object(ob2);
-   object_list->add_object(ob3);
-
-   ob3->add_link(ob1, "munt");
-   ob3->add_link(ob2, "munt");
-
-
+   
    statemgr::core_game_loop(1.f / 60.f);
 }

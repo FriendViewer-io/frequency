@@ -4,10 +4,12 @@
 #include <thread>
 
 #include "engine/core/GOList.hh"
+#include "engine/core/Extension.hh"
 
 namespace statemgr {
 EngineState game_state = EngineState::UNINITIALIZED;
 GOList object_list;
+std::vector<Extension*> extension_list;
 
 EngineState get_game_state(EngineState state) { return game_state; }
 
@@ -46,50 +48,63 @@ void level_change() {
    }
 }
 
-GOList* get_object_list() { return &object_list; }
-
 void core_game_loop(float time_delta) {
    namespace ch = std::chrono;
    using sc = std::chrono::system_clock;
 
    uint64_t tick_count = 0;
 
+   for (Extension* ext : extension_list) {
+      ext->extension_init();
+   }
+
    ch::time_point start_time = sc::now();
    game_state = EngineState::ACTIVE;
 
    while (game_state != EngineState::SHUTDOWN) {
       // pre-tick
-      if (game_state == EngineState::ACTIVE) {
-         object_list.for_each([time_delta](GObject* obj) { obj->tick(time_delta); });
-
-         object_list.for_each([](GObject* obj) { obj->commit(); });
-
-         // post-tick
-
-         object_list.for_each([time_delta](GObject* obj) { obj->post_tick(time_delta); });
-      } else if (game_state == EngineState::PAUSED) {
-         // do only some of them
-         object_list.for_each([time_delta](GObject* obj) {
-            if (obj->active_during_pause()) {
-               obj->tick(time_delta);
-            }
-         });
-
-         object_list.for_each([](GObject* obj) {
-            if (obj->active_during_pause()) {
-               obj->commit();
-            }
-         });
-         
-         // post-tick
-
-         object_list.for_each([time_delta](GObject* obj) {
-            if (obj->active_during_pause()) {
-               obj->post_tick(time_delta);
-            }
-         });
+      for (Extension* ext : extension_list) {
+         ext->pre_tick(time_delta);
       }
+
+      object_list.for_each([time_delta](GObject* obj) {
+         if (game_state == EngineState::ACTIVE ||
+             (game_state == EngineState::PAUSED && obj->active_during_pause())) {
+            obj->tick(time_delta);
+         }
+      });
+
+      object_list.for_each([](GObject* obj) {
+         if (game_state == EngineState::ACTIVE ||
+             (game_state == EngineState::PAUSED && obj->active_during_pause())) {
+            obj->commit();
+         }
+      });
+
+      // post-tick
+
+      for (Extension* ext : extension_list) {
+         ext->pre_post_tick(time_delta);
+      }
+
+      object_list.for_each([time_delta](GObject* obj) {
+         if (game_state == EngineState::ACTIVE ||
+             (game_state == EngineState::PAUSED && obj->active_during_pause())) {
+            obj->post_tick(time_delta);
+         }
+      });
+
+      object_list.for_each([](GObject* obj) {
+         if (game_state == EngineState::ACTIVE ||
+             (game_state == EngineState::PAUSED && obj->active_during_pause())) {
+            obj->flush_messages();
+         }
+      });
+
       // post-post-tick
+      for (Extension* ext : extension_list) {
+         ext->tick_end(time_delta);
+      }
 
       // loop through object list, delete all components marked as munted
       object_list.remove_if([](GObject* obj) {
@@ -106,5 +121,9 @@ void core_game_loop(float time_delta) {
       std::this_thread::sleep_until(next_tick_start);
    }  // end while
 }
+
+void add_extension(Extension* ext) { extension_list.emplace_back(ext); }
+
+GOList* get_object_list() { return &object_list; }
 
 }  // namespace statemgr

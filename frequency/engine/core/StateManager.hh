@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
+
 class GOList;
+class Extension;
 
 namespace statemgr {
 enum class EngineState {
@@ -17,8 +20,8 @@ void pause_game();
 void resume_game();
 void level_change(/* specify level?? */);
 
-void add_extension();
 void core_game_loop(float time_delta);
+void add_extension(Extension* ext);
 GOList* get_object_list();
 
 }

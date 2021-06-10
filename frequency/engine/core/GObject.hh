@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <queue>
 
 #include "engine/core/Component.hh"
 #include "engine/math/Vector.hh"
@@ -34,6 +35,8 @@ public:
    void add_link(GObject* target, std::string const& state);
    void remove_link(GObject* target, std::string const& state);
    void remove_all_links(GObject* target);
+   void enqueue_message(GObject* sender, std::string const& message);
+   void flush_messages();
    void broadcast_message(std::string const& state, std::string const& message);
    void send_message(GObject* target, std::string const& state, std::string const& message);
 
@@ -68,6 +71,7 @@ private:
    std::string name;
    int ID;
    std::map<std::string, std::vector<GObject*>> links;
+   std::queue<std::pair<GObject*, std::string>> message_queue;
 
    static constexpr uint8_t MESSAGING_DISABLE_FLAG = 0x01;
    static constexpr uint8_t PAUSE_ACTIVE_FLAG = 0x02;
