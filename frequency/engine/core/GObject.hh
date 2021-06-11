@@ -79,4 +79,6 @@ private:
    uint8_t flags;
 
    inline static int ID_counter = 0;
+
+   friend class PhysicsExtension;
 };

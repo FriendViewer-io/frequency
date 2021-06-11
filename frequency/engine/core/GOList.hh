@@ -6,6 +6,9 @@
 
 class GOList {
 public:
+   using iterator = std::vector<GObject*>::iterator;
+   using const_iterator = std::vector<GObject*>::const_iterator;
+
    void add_object(GObject* obj);
    void remove_object(GObject* obj);
    void remove_object(std::string const& name);
@@ -13,6 +16,11 @@ public:
 
    GObject* get_object(std::string const& name);
    GObject* get_object(int id);
+
+   iterator begin() { return object_list.begin(); }
+   iterator end() { return object_list.end(); }
+   const_iterator begin() const { return object_list.begin(); }
+   const_iterator end() const { return object_list.end(); }
 
    template <typename T>
    void for_each(T&& fn) {

@@ -57,6 +57,9 @@ struct vec2 {
    float operator[](size_t idx) const {
       return arr[idx];
    }
+   vec2 operator-() const {
+      return vec2(-x, -y);
+   }
 
    inline float dot(vec2 const& rhs) const { return x * rhs.x + y * rhs.y; }
    inline float mag_sq() const { return dot(*this); }

@@ -39,6 +39,9 @@
     <ClCompile Include="engine\math\Vector.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\physics\ColliderComponent.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format">
@@ -68,6 +71,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\Vector.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\ColliderComponent.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\PhysicsExtension.hh">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

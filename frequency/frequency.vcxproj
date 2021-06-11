@@ -101,6 +101,7 @@
     <ClCompile Include="engine\core\StateManager.cc" />
     <ClCompile Include="engine\core\Token.cc" />
     <ClCompile Include="engine\math\Vector.cc" />
+    <ClCompile Include="engine\physics\ColliderComponent.cc" />
     <ClCompile Include="frequency_main.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +116,8 @@
     <ClInclude Include="engine\core\StateManager.hh" />
     <ClInclude Include="engine\core\Token.hh" />
     <ClInclude Include="engine\math\Vector.hh" />
+    <ClInclude Include="engine\physics\ColliderComponent.hh" />
+    <ClInclude Include="engine\physics\PhysicsExtension.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
