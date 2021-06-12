@@ -102,6 +102,8 @@
     <ClCompile Include="engine\core\Token.cc" />
     <ClCompile Include="engine\math\Vector.cc" />
     <ClCompile Include="engine\physics\ColliderComponent.cc" />
+    <ClCompile Include="engine\physics\ColliderShapes.cc" />
+    <ClCompile Include="engine\physics\PhysicsExtension.cc" />
     <ClCompile Include="frequency_main.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +118,7 @@
     <ClInclude Include="engine\core\StateManager.hh" />
     <ClInclude Include="engine\core\Token.hh" />
     <ClInclude Include="engine\math\Vector.hh" />
+    <ClInclude Include="engine\physics\CircleCollider.hh" />
     <ClInclude Include="engine\physics\ColliderComponent.hh" />
     <ClInclude Include="engine\physics\PhysicsExtension.hh" />
   </ItemGroup>

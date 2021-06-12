@@ -10,7 +10,7 @@
 void ColliderComponent::on_tick(float dt) {
    parent_data->position = (acceleration * dt * dt) * 0.5f + (velocity * dt) + parent_data->position;
    velocity = (acceleration * dt) + velocity;
-   printf("My current position is %f %f\n", parent_data->position.x, parent_data->position.y);
+   //printf("My current position is %f %f\n", parent_data->position.x, parent_data->position.y);
 }
 
 void ColliderComponent::commit(Component const& from) {

@@ -9,32 +9,33 @@
 
 struct Simplex {
    std::array<vec2, 3> points;
-   int size = 0;
+   int sz = 0;
 
    Simplex() : points({0, 0, 0}) {}
 
    vec2& operator[](unsigned i) { return points[i]; }
-   int size() const { return size; }
+   int size() const { return sz; }
    auto begin() const { return points.begin(); }
-   auto end() const { return points.end() - (3 - size); }
+   auto end() const { return points.end() - (3 - sz); }
 
    void push_front(vec2 point) {
       points = {point, points[0], points[1] };
-      size = std::min(size + 1, 3);
+      sz = std::min(sz + 1, 3);
    }
 
    Simplex& operator=(std::initializer_list<vec2> list) {
       for (auto v = list.begin(); v != list.end(); v++) {
          points[std::distance(list.begin(), v)] = *v;
       }
-      size = list.size();
+      sz = list.size();
 
       return *this;
    }
 };
 
 vec2 support(ColliderComponent* a, ColliderComponent* b, vec2 v) {
-   return a->support(vec2(1, 0)) - b->support(vec2(-1, 0));
+   v.normalize();
+   return a->support(v) - b->support(-v);
 }
 
 inline bool same_direction(vec2 const& d, vec2 const& ao) {
@@ -50,7 +51,7 @@ vec2 triple(vec2 a, vec2 b, vec2 c) {
 bool line(Simplex& points, vec2& direction) {
    vec2 ab = points[0] - points[1];
 
-   direction = triple(ab, -points[0], ab);
+   direction = triple(ab, -points[1], ab);
    return false;
 }
 
@@ -75,7 +76,7 @@ bool triangle(Simplex& points, vec2& direction) {
 }
 
 bool next_simplex(Simplex& points, vec2& direction) {
-   switch (points.size) {
+   switch (points.size()) {
       case 2: return line(points, direction);
       case 3: return triangle(points, direction);
    }
@@ -88,7 +89,7 @@ bool do_gjk(ColliderComponent* a, ColliderComponent* b) {
    Simplex points;
    points.push_front(s);
 
-   vec2 direction = vec2(-s.x, -s.y);
+   vec2 direction = vec2(-s.x, -s.y).normalized();
 
    while (true) {
       s = support(a, b, direction);
@@ -119,12 +120,30 @@ void PhysicsExtension::pre_tick(float dt) {
 
 void PhysicsExtension::pre_post_tick(float dt) {
    for (int i = 0; i < collider_objects.size(); i++) {
+      GObject* lhs = collider_objects[i];
+      ColliderComponent* cc1 = nullptr;
+
+      for (auto& c : lhs->new_component_list) {
+         if (c->get_component_type_name() == "ColliderComponent") {
+            cc1 = static_cast<ColliderComponent*>(c.get());
+            break;
+         }
+      }
+
       for (int j = i + 1; j < collider_objects.size(); j++) {
-         GObject* lhs = collider_objects[i], *rhs = collider_objects[j];
+         GObject *rhs = collider_objects[j];
          
-         // if (do_gjk(lhs->component_, rhs)) {
-            // printf("They collide\n");
-         // }
+         ColliderComponent* cc2 = nullptr;
+         for (auto& c : rhs->new_component_list) {
+            if (c->get_component_type_name() == "ColliderComponent") {
+               cc2 = static_cast<ColliderComponent*>(c.get());
+               break;
+            }
+         }
+
+
+         if (do_gjk(cc1, cc2)) {
+         }
       }
    }
 }

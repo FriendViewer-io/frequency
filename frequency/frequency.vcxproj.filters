@@ -42,6 +42,12 @@
     <ClCompile Include="engine\physics\ColliderComponent.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\physics\ColliderShapes.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\physics\PhysicsExtension.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format">
@@ -77,6 +83,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\physics\PhysicsExtension.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\CircleCollider.hh">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
