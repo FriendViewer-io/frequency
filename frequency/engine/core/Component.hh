@@ -11,6 +11,8 @@ class Component {
 public:
    void set_parent(GObject* parent) { this->parent = parent; }
    void set_reference_data(GObjectInternal* data) { parent_data = data; }
+   GObject* get_parent() { return parent; }
+   GObject const* get_parent() const { return parent; }
 
    // Called on GObject tick, post_tick, and on_message, only new copy
    virtual void on_tick(float dt) = 0;

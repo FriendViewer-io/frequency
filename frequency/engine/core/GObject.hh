@@ -48,6 +48,12 @@ public:
    vec2 const& get_scale() const { return old_data.scale; }
    Component const* get_component(std::string_view type_name) const;
 
+   vec2 const& get_staging_position() const { return new_data.position; }
+   float get_staging_rotation() const { return new_data.rotation; }
+   vec2 const& get_staging_scale() const { return new_data.scale; }
+   Component const* get_staging_component(std::string_view type_name) const;
+   Component* get_staging_component(std::string_view type_name);
+
    bool messaging_disabled() const;
    bool active_during_pause() const;
    bool is_munted() const;
@@ -79,6 +85,4 @@ private:
    uint8_t flags;
 
    inline static int ID_counter = 0;
-
-   friend class PhysicsExtension;
 };

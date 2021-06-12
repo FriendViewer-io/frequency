@@ -83,9 +83,9 @@ int main() {
    GObject* ob1 = new GObject, *ob2 = new GObject;
 
    // testing disable_messaging
-   ob1->init(vec2(100, 100), 0, vec2(), "adyam", false, false);
+   ob1->init(vec2(195, 100), 0, vec2(), "adyam", false, false);
    ob2->init(vec2(300, 100), 0, vec2(), "joe", false, false);
-   ob1->add_component(std::make_unique<CircleCollider>(vec2(50, 0), vec2(0, 0), 50));
+   ob1->add_component(std::make_unique<CircleCollider>(vec2(1, 0), vec2(0, 0), 50));
    ob2->add_component(std::make_unique<CircleCollider>(vec2(0, 0), vec2(0, 0), 50));
    object_list->add_object(ob1);
    object_list->add_object(ob2);

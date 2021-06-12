@@ -179,6 +179,19 @@ Component const* GObject::get_component(std::string_view type_name) const {
    return nullptr;
 }
 
+Component const* GObject::get_staging_component(std::string_view type_name) const {
+   for (auto const& comp : new_component_list) {
+      if (comp->get_component_type_name() == type_name) {
+         return comp.get();
+      }
+   }
+   return nullptr;
+}
+
+Component* GObject::get_staging_component(std::string_view type_name) {
+   return const_cast<Component*>(static_cast<GObject const*>(this)->get_staging_component(type_name));
+}
+
 bool GObject::messaging_disabled() const { return (flags & MESSAGING_DISABLE_FLAG) != 0; }
 
 bool GObject::active_during_pause() const { return (flags & PAUSE_ACTIVE_FLAG) != 0; }

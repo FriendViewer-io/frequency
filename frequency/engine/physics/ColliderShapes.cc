@@ -8,4 +8,4 @@ void CircleCollider::commit(Component const& from) {
    radius = rhs.radius;
 }
 
-vec2 CircleCollider::support(vec2 d) const { return parent_data->position + (d * radius); }
+vec2 CircleCollider::support(vec2 d) const { return parent_data->position + (d.normalized() * radius); }

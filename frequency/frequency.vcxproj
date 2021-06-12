@@ -103,6 +103,7 @@
     <ClCompile Include="engine\math\Vector.cc" />
     <ClCompile Include="engine\physics\ColliderComponent.cc" />
     <ClCompile Include="engine\physics\ColliderShapes.cc" />
+    <ClCompile Include="engine\physics\CollisionHelper.cc" />
     <ClCompile Include="engine\physics\PhysicsExtension.cc" />
     <ClCompile Include="frequency_main.cc" />
   </ItemGroup>
@@ -120,6 +121,7 @@
     <ClInclude Include="engine\math\Vector.hh" />
     <ClInclude Include="engine\physics\CircleCollider.hh" />
     <ClInclude Include="engine\physics\ColliderComponent.hh" />
+    <ClInclude Include="engine\physics\CollisionHelper.hh" />
     <ClInclude Include="engine\physics\PhysicsExtension.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

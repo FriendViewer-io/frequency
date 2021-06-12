@@ -60,6 +60,9 @@ struct vec2 {
    vec2 operator-() const {
       return vec2(-x, -y);
    }
+   bool operator==(vec2 const& rhs) const {
+      return x == rhs.x && y == rhs.y;
+   }
 
    inline float dot(vec2 const& rhs) const { return x * rhs.x + y * rhs.y; }
    inline float mag_sq() const { return dot(*this); }
