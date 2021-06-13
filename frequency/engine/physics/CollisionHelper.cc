@@ -130,8 +130,6 @@ bool overlap_test_gjk(ColliderComponent* a, ColliderComponent* b) {
       }
 
       simplex.add_point(support_vec);
-      // go to bed, ANdrew/ munt munt ahh ahh munt munt
-      // */////////////////////////////////////////ANdrew
 
       // Compute simplex and search direction for next iteration
       // returns true if the input simplex contains the origin

@@ -10,6 +10,7 @@ public:
    std::unique_ptr<Component> clone() { return std::make_unique<CircleCollider>(vec2(), vec2(), radius); }
 
    vec2 support(vec2 d) const override;
+   void update_bounds() override;
    CollisionShape get_shape() const override { return CollisionShape::CIRCLE; }
 
    float get_radius() const { return radius; }
