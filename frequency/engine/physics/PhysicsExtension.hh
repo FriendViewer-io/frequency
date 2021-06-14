@@ -21,9 +21,11 @@ public:
 
    std::string_view extension_name() const { return "PhysicsExtension"; }
 
-   SpatialPartition& get_spatial_partition() { return *quadtree; }
+   SpatialPartition& get_dynamic_partition() { return *cell_partition; }
+   SpatialPartition& get_static_partition() { return *quadtree; }
 
 private:
    std::vector<GObject*> collider_objects;
    SpatialPartition* quadtree;
+   SpatialPartition* cell_partition;
 };

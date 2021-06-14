@@ -12,6 +12,7 @@ public:
        : precomputed_bounds(vec2(), vec2()),
          refresh_bounds(true),
          _is_static(is_static),
+         was_static_inserted(false),
          mass(0.f),
          velocity(start_vel),
          acceleration(start_accel) {}
@@ -35,6 +36,7 @@ protected:
    aabb precomputed_bounds;
    bool refresh_bounds;
    bool _is_static;
+   bool was_static_inserted;
 
    float mass;
    vec2 velocity;
