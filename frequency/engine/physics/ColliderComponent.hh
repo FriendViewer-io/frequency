@@ -8,8 +8,10 @@ enum class CollisionShape { CIRCLE };
 
 class ColliderComponent : public Component {
 public:
-   ColliderComponent(vec2 start_vel, vec2 start_accel)
+   ColliderComponent(bool is_static, vec2 start_vel = vec2(), vec2 start_accel = vec2())
        : precomputed_bounds(vec2(), vec2()),
+         refresh_bounds(true),
+         _is_static(is_static),
          mass(0.f),
          velocity(start_vel),
          acceleration(start_accel) {}
@@ -21,19 +23,20 @@ public:
    std::string_view get_component_type_name() const final { return "ColliderComponent"; }
    void commit(Component const& from) override;
    aabb const& bounding_box() const { return precomputed_bounds; }
+   bool is_static() const { return _is_static; }
 
    virtual vec2 support(vec2 d) const = 0;
    virtual void update_bounds() = 0;
    virtual CollisionShape get_shape() const = 0;
 
-   virtual ~ColliderComponent() {}
+   virtual ~ColliderComponent();
 
 protected:
    aabb precomputed_bounds;
+   bool refresh_bounds;
+   bool _is_static;
 
-private:
    float mass;
-
    vec2 velocity;
    vec2 acceleration;
 };

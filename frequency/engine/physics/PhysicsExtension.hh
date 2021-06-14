@@ -3,11 +3,15 @@
 #include <vector>
 
 #include "engine/core/Extension.hh"
+#include "engine/math/AABB.hh"
 
 class GObject;
+class SpatialPartition;
 
 class PhysicsExtension : public Extension {
 public:
+   PhysicsExtension(aabb world_bounds);
+
    void extension_init() override {}
    void pre_tick(float dt) override;
    // Detect [& solve collisions]
@@ -17,6 +21,9 @@ public:
 
    std::string_view extension_name() const { return "PhysicsExtension"; }
 
+   SpatialPartition& get_spatial_partition() { return *quadtree; }
+
 private:
    std::vector<GObject*> collider_objects;
+   SpatialPartition* quadtree;
 };

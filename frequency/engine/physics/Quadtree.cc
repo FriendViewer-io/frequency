@@ -46,6 +46,57 @@ void Quadtree::query(ColliderComponent* cc, std::vector<ColliderComponent*>& res
    }
 }
 
+void Quadtree::remove(ColliderComponent* cc) {
+   if (leaf) {
+      auto it = std::find(contained_objects.begin(), contained_objects.end(), cc);
+      if (it != contained_objects.end()) {
+         contained_objects.erase(it);
+      }
+   } else {
+      aabb bounds = get_centered_bounds(cc);
+      bool found = false;
+      for (Quadtree* child : children) {
+         if (child->cell_bounds.contains(bounds)) {
+            child->remove(cc);
+            found = true;
+         }
+      }
+      if (found) {
+         bool should_kill_children = true;
+         for (Quadtree* child : children) {
+            if (!child->contained_objects.empty() || !child->leaf) {
+               should_kill_children = false;
+               break;
+            }
+         }
+         if (should_kill_children) {
+            for (int i = 0; i < 4; i++) {
+               delete children[i];
+               children[i] = nullptr;
+            }
+            // since we have no children now, we are a leaf
+            leaf = true;
+         }
+      } else {
+         auto it = std::find(contained_objects.begin(), contained_objects.end(), cc);
+         if (it != contained_objects.end()) {
+            contained_objects.erase(it);
+         }
+      }
+   }
+}
+
+void Quadtree::clear() {
+   if (!leaf) {
+      for (int i = 0; i < children.size(); i++) {
+         delete children[i];
+         children[i] = nullptr;
+      }
+   }
+   leaf = true;
+   contained_objects.clear();
+}
+
 void Quadtree::collect(std::vector<ColliderComponent*>& out) {
    out.insert(out.end(), contained_objects.begin(), contained_objects.end());
 

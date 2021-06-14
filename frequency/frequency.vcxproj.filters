@@ -51,6 +51,12 @@
     <ClCompile Include="engine\physics\CollisionHelper.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\physics\Quadtree.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\math\AABB.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format">
@@ -92,6 +98,18 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\physics\CollisionHelper.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\Quadtree.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\AABB.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\SpatialPartition.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\core\Extension.hh">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

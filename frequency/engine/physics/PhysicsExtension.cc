@@ -4,6 +4,9 @@
 #include "engine/core/StateManager.hh"
 #include "engine/physics/ColliderComponent.hh"
 #include "engine/physics/CollisionHelper.hh"
+#include "engine/physics/Quadtree.hh"
+
+PhysicsExtension::PhysicsExtension(aabb world_bounds) { quadtree = new Quadtree(world_bounds, 0); }
 
 // Collect all GObjects with a ColliderComponent
 // and add them to collider_objects
@@ -12,24 +15,27 @@ void PhysicsExtension::pre_tick(float dt) {
 
    for (GObject* go : *object_list) {
       if (go->get_component("ColliderComponent")) {
-          collider_objects.push_back(go);
+         collider_objects.push_back(go);
       }
    }
 }
 
 void PhysicsExtension::pre_post_tick(float dt) {
+   std::vector<ColliderComponent*> possible_collisions;
    for (int i = 0; i < collider_objects.size(); i++) {
       GObject* lhs = collider_objects[i];
-      ColliderComponent* cc1 = static_cast<ColliderComponent*>(lhs->get_staging_component("ColliderComponent"));
+      ColliderComponent* cc1 =
+          static_cast<ColliderComponent*>(lhs->get_staging_component("ColliderComponent"));
 
-      for (int j = i + 1; j < collider_objects.size(); j++) {
-         GObject *rhs = collider_objects[j];
-         ColliderComponent* cc2 = static_cast<ColliderComponent*>(rhs->get_staging_component("ColliderComponent"));
+      possible_collisions.clear();
+      quadtree->query(cc1, possible_collisions);
+      for (int j = 0; j < possible_collisions.size(); j++) {
+         ColliderComponent* cc2 = possible_collisions[j];
+         if (cc2 == cc1) {
+            continue;
+         }
 
          if (collision::overlap_test_gjk(cc1, cc2)) {
-            printf("Overlap spotted!\n");
-         } else {
-            printf("No overlap happening...\n");
          }
       }
    }
