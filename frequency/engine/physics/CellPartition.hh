@@ -17,11 +17,15 @@ public:
    void remove(ColliderComponent* cc) override;
    void clear() override;
 
+   aabb const& get_world_bounds() const { return world_bounds; }
+   vec2 const& get_cell_dimensions() const { return cell_dimensions; }
+
    virtual ~CellPartition() {}
 
 private:
    aabb world_bounds;
    vec2 cell_dimensions;
+   int row_count, col_count;
 
    std::vector<std::vector<std::vector<ColliderComponent*>>> object_map;
 };

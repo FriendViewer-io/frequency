@@ -58,7 +58,7 @@ void core_game_loop(float time_delta) {
    namespace ch = std::chrono;
    using sc = std::chrono::system_clock;
 
-   physics_ext = new PhysicsExtension(aabb(vec2(0, 0), vec2(1000, 1000)));
+   physics_ext = new PhysicsExtension(aabb(vec2(0, 0), vec2(1000, 1000)), vec2(100, 100));
    add_extension(physics_ext);
 
    for (Extension* ext : extension_list) {

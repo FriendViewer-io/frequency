@@ -22,8 +22,8 @@ void ColliderComponent::on_tick(float dt) {
    } else {
       if (!was_static_inserted) {
          was_static_inserted = true;
+         statemgr::get_physics_extension()->get_static_partition().insert(this);
       }
-      statemgr::get_physics_extension()->get_static_partition().insert(this);
    }
 }
 

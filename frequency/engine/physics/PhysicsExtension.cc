@@ -7,9 +7,9 @@
 #include "engine/physics/CollisionHelper.hh"
 #include "engine/physics/Quadtree.hh"
 
-PhysicsExtension::PhysicsExtension(aabb world_bounds) {
+PhysicsExtension::PhysicsExtension(aabb world_bounds, vec2 cell_dims) {
    quadtree = new Quadtree(world_bounds, 0);
-   cell_partition = new CellPartition(world_bounds, 0);
+   cell_partition = new CellPartition(world_bounds, cell_dims);
 }
 
 // Collect all GObjects with a ColliderComponent

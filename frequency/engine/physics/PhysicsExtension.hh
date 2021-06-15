@@ -10,7 +10,7 @@ class SpatialPartition;
 
 class PhysicsExtension : public Extension {
 public:
-   PhysicsExtension(aabb world_bounds);
+   PhysicsExtension(aabb world_bounds, vec2 cell_dims);
 
    void extension_init() override {}
    void pre_tick(float dt) override;

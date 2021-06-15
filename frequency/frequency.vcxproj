@@ -102,6 +102,7 @@
     <ClCompile Include="engine\core\Token.cc" />
     <ClCompile Include="engine\math\AABB.cc" />
     <ClCompile Include="engine\math\Vector.cc" />
+    <ClCompile Include="engine\physics\CellPartition.cc" />
     <ClCompile Include="engine\physics\ColliderComponent.cc" />
     <ClCompile Include="engine\physics\ColliderShapes.cc" />
     <ClCompile Include="engine\physics\CollisionHelper.cc" />
@@ -123,6 +124,7 @@
     <ClInclude Include="engine\core\Token.hh" />
     <ClInclude Include="engine\math\AABB.hh" />
     <ClInclude Include="engine\math\Vector.hh" />
+    <ClInclude Include="engine\physics\CellPartition.hh" />
     <ClInclude Include="engine\physics\CircleCollider.hh" />
     <ClInclude Include="engine\physics\ColliderComponent.hh" />
     <ClInclude Include="engine\physics\CollisionHelper.hh" />
