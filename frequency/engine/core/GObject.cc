@@ -36,6 +36,9 @@ void GObject::tick(float dt) {
    for (auto& comp : new_component_list) {
       comp->on_tick(dt);
    }
+   for (auto& comp : singular_component_list) {
+      comp->on_tick(dt);
+   }
 }
 
 void GObject::commit() {
@@ -47,6 +50,9 @@ void GObject::commit() {
 
 void GObject::post_tick(float dt) {
    for (auto& comp : new_component_list) {
+      comp->on_post_tick(dt);
+   }
+   for (auto& comp : singular_component_list) {
       comp->on_post_tick(dt);
    }
 }
@@ -66,6 +72,9 @@ void GObject::on_message(GObject* sender, std::string const& message) {
    for (auto& comp : new_component_list) {
       comp->on_message(sender, message);
    }
+   for (auto& comp : singular_component_list) {
+      comp->on_message(sender, message);
+   }
 
    if (message == "$$destroy") {
       remove_all_links(sender);
@@ -75,9 +84,13 @@ void GObject::on_message(GObject* sender, std::string const& message) {
 void GObject::add_component(std::unique_ptr<Component> component) {
    component->set_parent(this);
    component->set_reference_data(&new_data);
-   
-   old_component_list.emplace_back(component->clone());
-   new_component_list.emplace_back(std::move(component));
+
+   if (component->needs_clone()) {
+      old_component_list.emplace_back(component->clone());
+      new_component_list.emplace_back(std::move(component));
+   } else {
+      singular_component_list.emplace_back(std::move(component));
+   }
 }
 
 void GObject::add_link(GObject* target, std::string const& state) {
@@ -176,11 +189,21 @@ Component const* GObject::get_component(std::string_view type_name) const {
          return comp.get();
       }
    }
+   for (auto const& comp : singular_component_list) {
+      if (comp->get_component_type_name() == type_name) {
+         return comp.get();
+      }
+   }
    return nullptr;
 }
 
 Component const* GObject::get_staging_component(std::string_view type_name) const {
    for (auto const& comp : new_component_list) {
+      if (comp->get_component_type_name() == type_name) {
+         return comp.get();
+      }
+   }
+   for (auto const& comp : singular_component_list) {
       if (comp->get_component_type_name() == type_name) {
          return comp.get();
       }

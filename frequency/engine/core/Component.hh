@@ -19,9 +19,12 @@ public:
    virtual void on_post_tick(float dt) = 0;
    virtual void on_message(GObject* sender, std::string const& msg) = 0;
 
+   // If true, clone & commit must be properly implemented
+   // If false, commit & clone can be ignored
+   virtual bool needs_clone() const = 0;
    // Copy new component data to old component
-   virtual void commit(Component const& from) = 0;
-   virtual std::unique_ptr<Component> clone() = 0;
+   virtual void commit(Component const& from) {}
+   virtual std::unique_ptr<Component> clone() { return nullptr; }
 
    virtual std::string_view get_component_type_name() const = 0;
 

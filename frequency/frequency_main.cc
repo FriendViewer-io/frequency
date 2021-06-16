@@ -1,7 +1,9 @@
-#include <SDL.h>
-#undef main
+
 #include <conio.h>
 #include <thread>
+#include <SDL.h>
+
+#undef main
 
 #include "engine/core/Component.hh"
 #include "engine/core/Extension.hh"
@@ -188,3 +190,158 @@ int main() {
    statemgr::add_extension(new GhettoExtension());
    statemgr::core_game_loop(1.f / 60.f);
 }
+
+
+// #include <gl/glew.h>
+
+// #include <SDL_opengl.h>
+// #include <SDL.h>
+
+// #undef main
+// // Shader sources
+// const GLchar* vertexSource = R"glsl(
+//     #version 150 core
+//     in vec2 position;
+//     uniform vec3 color;
+//     out vec3 Color;
+//     void main()
+//     {
+//         Color = color;
+//         gl_Position = vec4(position, 0.0, 1.0);
+//     }
+// )glsl";
+// const GLchar* fragmentSource = R"glsl(
+//     #version 150 core
+//     in vec3 Color;
+//     out vec4 outColor;
+//     void main()
+//     {
+//         outColor = vec4(Color, 1.0);
+//     }
+// )glsl";
+
+// int main()
+// {
+
+
+    
+    
+    
+//     if (SDL_Init(SDL_INIT_VIDEO) < 0) /* Initialize SDL's Video subsystem */
+//         return 1;//sdldie("Unable to initialize SDL"); /* Or die on error */
+//    SDL_Window* window = SDL_CreateWindow("SampleWindow", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000,
+//                            1000, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+
+//    SDL_GLContext maincontext = SDL_GL_CreateContext(window);
+
+//     /* Request opengl 3.2 context.
+//      * SDL doesn't have the ability to choose which profile at this time of writing,
+//      * but it should default to the core profile */
+//     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+//     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+
+//     /* Turn on double buffering with a 24bit Z buffer.
+//      * You may need to change this to 16 or 32 for your system */
+//     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+//     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+//     // Initialize GLEW
+//     glewExperimental = GL_TRUE;
+//     glewInit();
+
+//     // Create Vertex Array Object
+//     GLuint vao;
+//     glGenVertexArrays(1, &vao);
+//     glBindVertexArray(vao);
+
+//     // Create a Vertex Buffer Object and copy the vertex data to it
+//     GLuint vbo;
+//     glGenBuffers(1, &vbo);
+
+//     GLfloat vertices[] = {
+//         -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Top-left
+//          0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // Top-right
+//          0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // Bottom-right
+//         -0.5f, -0.5f, 1.0f, 1.0f, 1.0f  // Bottom-left
+//     };
+
+//     glBindBuffer(GL_ARRAY_BUFFER, vbo);
+//     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+//     // Create an element array
+//     GLuint ebo;
+//     glGenBuffers(1, &ebo);
+
+//     GLuint elements[] = {
+//         0, 1, 2
+//         //2, 3, 0
+//     };
+
+//     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+//     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+
+//     // Create and compile the vertex shader
+//     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+//     glShaderSource(vertexShader, 1, &vertexSource, NULL);
+//     glCompileShader(vertexShader);
+
+//     // Create and compile the fragment shader
+//     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+//     glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
+//     glCompileShader(fragmentShader);
+
+//     // Link the vertex and fragment shader into a shader program
+//     GLuint shaderProgram = glCreateProgram();
+//     glAttachShader(shaderProgram, vertexShader);
+//     glAttachShader(shaderProgram, fragmentShader);
+//     //
+//     glBindFragDataLocation(shaderProgram, 0, "outColor");
+//     glLinkProgram(shaderProgram);
+//     glUseProgram(shaderProgram);
+
+//     // Specify the layout of the vertex data
+//     GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+//     glEnableVertexAttribArray(posAttrib);
+//     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+
+//     GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
+//     glEnableVertexAttribArray(colAttrib);
+//     glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+
+//     bool running = true;
+//     while (running)
+//     {
+//         /*sf::Event windowEvent;
+//         while (window.pollEvent(windowEvent))
+//         {
+//             switch (windowEvent.type)
+//             {
+//             case sf::Event::Closed:
+//                 running = false;
+//                 break;
+//             }
+//         }*/
+
+//         // Clear the screen to black
+//         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+//         glClear(GL_COLOR_BUFFER_BIT);
+
+//         // Draw a rectangle from the 2 triangles using 6 indices
+//         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+//         // Swap buffers
+//         //window.display();
+//         SDL_GL_SwapWindow(window);
+//     }
+
+//     glDeleteProgram(shaderProgram);
+//     glDeleteShader(fragmentShader);
+//     glDeleteShader(vertexShader);
+
+//     glDeleteBuffers(1, &ebo);
+//     glDeleteBuffers(1, &vbo);
+
+//     glDeleteVertexArrays(1, &vao);
+
+//     return 0;
+// }

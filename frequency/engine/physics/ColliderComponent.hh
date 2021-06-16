@@ -21,6 +21,7 @@ public:
    void on_post_tick(float dt) override {}
    void on_message(GObject* sender, std::string const& msg) override {}
 
+   bool needs_clone() const { return true; }
    std::string_view get_component_type_name() const final { return "ColliderComponent"; }
    void commit(Component const& from) override;
    aabb const& bounding_box() const { return precomputed_bounds; }

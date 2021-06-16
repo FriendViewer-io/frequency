@@ -3,7 +3,7 @@
 #include "engine/core/GObject.hh"
 #include "engine/physics/ColliderComponent.hh"
 
-aabb get_centered_bounds(ColliderComponent* cc) {
+static aabb get_centered_bounds(ColliderComponent* cc) {
    aabb bbox = cc->bounding_box();
    bbox.shift(cc->get_parent()->get_staging_position());
    return bbox;

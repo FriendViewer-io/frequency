@@ -73,6 +73,8 @@ private:
    std::vector<std::unique_ptr<Component>> old_component_list;
    // Internal only, copied to old
    std::vector<std::unique_ptr<Component>> new_component_list;
+   // Both internal & external
+   std::vector<std::unique_ptr<Component>> singular_component_list;
 
    std::string name;
    int ID;
