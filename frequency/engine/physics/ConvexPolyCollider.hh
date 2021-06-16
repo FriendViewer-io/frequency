@@ -10,5 +10,8 @@ public:
    virtual int get_num_vertices() const = 0;
    virtual vec2 get_vertex(int index) const = 0;
 
+   vec2 support(vec2 d) const;
+   vec2 get_vertex_absolute(int index) const;
+
    virtual ~ConvexPolyCollider() {}
 };

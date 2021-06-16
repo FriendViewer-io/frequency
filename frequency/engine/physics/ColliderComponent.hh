@@ -4,7 +4,13 @@
 #include "engine/math/AABB.hh"
 #include "engine/math/Vector.hh"
 
-enum class CollisionShape { CIRCLE };
+enum class CollisionShape { 
+   CIRCLE,
+   AABOX_CVP,
+
+   CONVEX_POLY_START = AABOX_CVP,
+   CONVEX_POLY_END = AABOX_CVP,
+};
 
 class ColliderComponent : public Component {
 public:

@@ -4,7 +4,9 @@
 
 #include "engine/core/GObject.hh"
 #include "engine/math/Vector.hh"
+#include "engine/physics/CircleCollider.hh"
 #include "engine/physics/ColliderComponent.hh"
+#include "engine/physics/ConvexPolyCollider.hh"
 
 namespace collision {
 
@@ -139,6 +141,126 @@ bool overlap_test_gjk(ColliderComponent* a, ColliderComponent* b) {
    }
    // Should never reach here
    return false;
+}
+
+bool overlap_test_circle_circle(CircleCollider* a, CircleCollider* b) {
+   vec2 a_center = a->get_parent()->get_position();
+   vec2 b_center = b->get_parent()->get_position();
+   const float double_rad = a->get_radius() + b->get_radius();
+   vec2 ab = b_center - a_center;
+   if (ab.mag_sq() < (double_rad * double_rad)) {
+      return true;
+   }
+   return false;
+}
+
+bool overlap_test_circle_convex(CircleCollider* a, ConvexPolyCollider* b) {
+   enum Feature { EDGE, VERTEX };
+   float min_dist_squared = FLT_MAX;
+   Feature nearest_feature;
+   vec2 nearest_point;
+   vec2 nearest_edge;
+
+   const vec2 a_pos = a->get_parent()->get_position();
+   const float radius = a->get_radius();
+
+   for (int i = 0; i < b->get_num_vertices(); i++) {
+      vec2 vi = b->get_vertex(i);
+      vec2 vj = b->get_vertex((i + 1) & b->get_num_vertices());
+
+      vec2 ij = vj - vi;
+      vec2 ia = a_pos - vi;
+
+      vec2 edge_dir = ij.normalized();
+      // named G
+      vec2 point_on_ij = edge_dir * edge_dir.dot(ia) + vi;
+
+      vec2 ig = point_on_ij - vi;
+      vec2 jg = point_on_ij - vj;
+
+      if (ig.dot(jg) < 0.f) {
+         const float distance_to_circle = (a_pos - point_on_ij).mag_sq();
+         if (distance_to_circle < min_dist_squared) {
+            min_dist_squared = distance_to_circle;
+            nearest_feature = EDGE;
+            nearest_edge = ij;
+            nearest_point = point_on_ij;
+         }
+      }  // otherwise ignore this point
+
+      const float distance_to_vi = (vi - a_pos).mag_sq();
+      if (distance_to_vi < min_dist_squared) {
+         min_dist_squared = distance_to_vi;
+         nearest_feature = VERTEX;
+         nearest_point = vi;
+      }
+   }
+
+   return (nearest_point - a_pos).mag_sq() < (radius * radius);
+}
+
+bool overlap_test(ColliderComponent* a, ColliderComponent* b) {
+   CollisionShape a_shape = a->get_shape();
+   CollisionShape b_shape = b->get_shape();
+
+   if (a_shape == CollisionShape::CIRCLE && b_shape == CollisionShape::CIRCLE) {
+      return overlap_test_circle_circle(static_cast<CircleCollider*>(a),
+                                        static_cast<CircleCollider*>(b));
+
+   } else if (a_shape == CollisionShape::CIRCLE && b_shape >= CollisionShape::CONVEX_POLY_START &&
+              a_shape <= CollisionShape::CONVEX_POLY_END) {
+      return overlap_test_circle_convex(static_cast<CircleCollider*>(a),
+                                        static_cast<ConvexPolyCollider*>(b));
+
+   } else if (b_shape == CollisionShape::CIRCLE && a_shape >= CollisionShape::CONVEX_POLY_START &&
+              a_shape <= CollisionShape::CONVEX_POLY_END) {
+      return overlap_test_circle_convex(static_cast<CircleCollider*>(b),
+                                        static_cast<ConvexPolyCollider*>(a));
+
+   } else {
+      return overlap_test_gjk(a, b);
+   }
+}
+
+void generate_contacts_circle_circle(CircleCollider* a, CircleCollider* b,
+                                     ContactManifold& manifold) {
+   vec2 ca = a->get_parent()->get_position();
+   vec2 cb = b->get_parent()->get_position();
+   vec2 resolve_dir = cb - ca;
+
+   const float dist = resolve_dir.mag();
+   resolve_dir /= dist;
+
+   manifold.a = a;
+   manifold.b = b;
+   manifold.normal = resolve_dir;
+   manifold.tangent = vec2(-resolve_dir.y, resolve_dir.x);
+   manifold.pa = ca + resolve_dir * a->get_radius();
+   manifold.pb = cb - resolve_dir * b->get_radius();
+   manifold.overlap_distance = (a->get_radius() + b->get_radius()) - dist;
+}
+
+void generate_contacts(ColliderComponent* a, ColliderComponent* b, ContactManifold& manifold) {
+   CollisionShape a_shape = a->get_shape();
+   CollisionShape b_shape = b->get_shape();
+
+   if (a_shape == CollisionShape::CIRCLE && b_shape == CollisionShape::CIRCLE) {
+      return generate_contacts_circle_circle(static_cast<CircleCollider*>(a),
+                                             static_cast<CircleCollider*>(b), manifold);
+
+   } else if (a_shape == CollisionShape::CIRCLE && b_shape >= CollisionShape::CONVEX_POLY_START &&
+              a_shape <= CollisionShape::CONVEX_POLY_END) {
+      // return overlap_test_circle_convex(static_cast<CircleCollider*>(a),
+      //                                   static_cast<ConvexPolyCollider*>(b));
+
+   } else if (b_shape == CollisionShape::CIRCLE && a_shape >= CollisionShape::CONVEX_POLY_START &&
+              a_shape <= CollisionShape::CONVEX_POLY_END) {
+      // return overlap_test_circle_convex(static_cast<CircleCollider*>(b),
+      //                                   static_cast<ConvexPolyCollider*>(a));
+
+   } else {
+      // return overlap_test_gjk(a, b);
+   }
 }
 
 }  // namespace collision
