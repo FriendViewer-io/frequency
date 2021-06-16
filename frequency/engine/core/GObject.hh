@@ -63,6 +63,7 @@ public:
 
 private:
    void create_destroy_link(GObject* target);
+   void update_final_component_list();
 
    // External only
    GObjectInternal old_data;
@@ -75,6 +76,9 @@ private:
    std::vector<std::unique_ptr<Component>> new_component_list;
    // Both internal & external
    std::vector<std::unique_ptr<Component>> singular_component_list;
+   // Reference list for components trying to execute last
+   std::vector<Component*> final_component_list;
+   bool final_list_invalidated = true;
 
    std::string name;
    int ID;

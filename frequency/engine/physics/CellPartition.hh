@@ -12,9 +12,9 @@ class CellPartition : public SpatialPartition {
 public:
    CellPartition(aabb const& world_bounds, vec2 cell_dimensions);
 
-   void insert(ColliderComponent* cc) override;
-   void query(ColliderComponent* cc, std::vector<ColliderComponent*>& query_result) override;
-   void remove(ColliderComponent* cc) override;
+   void insert(aabb const& bounds, ColliderComponent* cc) override;
+   void query(aabb const& bounds, std::vector<ColliderComponent*>& query_result) override;
+   void remove(aabb const& bounds, ColliderComponent* cc) override;
    void clear() override;
 
    aabb const& get_world_bounds() const { return world_bounds; }

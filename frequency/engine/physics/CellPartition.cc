@@ -27,11 +27,7 @@ CellPartition::CellPartition(aabb const& world_bounds, vec2 cell_dimensions)
    }
 }
 
-void CellPartition::insert(ColliderComponent* cc) {
-   aabb bounds = get_centered_bounds(cc);
-   // find the cell that bounds.min and bounds.max belongs to
-   // cell_dimensions.x = width of each cell
-   // cell_dimensions.y = height of each cell
+void CellPartition::insert(aabb const& bounds, ColliderComponent* cc) {
    int xmin = static_cast<int>((bounds.min.x - world_bounds.min.x) / cell_dimensions.x);
    int ymin = static_cast<int>((bounds.min.y - world_bounds.min.y) / cell_dimensions.y);
    int xmax = static_cast<int>((bounds.max.x - world_bounds.min.x) / cell_dimensions.x);
@@ -53,9 +49,7 @@ void CellPartition::insert(ColliderComponent* cc) {
    }
 }
 
-void CellPartition::query(ColliderComponent* cc, std::vector<ColliderComponent*>& query_result) {
-   aabb bounds = get_centered_bounds(cc);
-
+void CellPartition::query(aabb const& bounds, std::vector<ColliderComponent*>& query_result) {
    int xmin = static_cast<int>((bounds.min.x - world_bounds.min.x) / cell_dimensions.x);
    int ymin = static_cast<int>((bounds.min.y - world_bounds.min.y) / cell_dimensions.y);
    int xmax = static_cast<int>((bounds.max.x - world_bounds.min.x) / cell_dimensions.x);
@@ -76,12 +70,13 @@ void CellPartition::query(ColliderComponent* cc, std::vector<ColliderComponent*>
                                 object_map[i][j].end());
          }
       }
+      // yes sort by address
+      std::sort(query_result.begin(), query_result.end());
+      query_result.erase(std::unique(query_result.begin(), query_result.end()), query_result.end());
    }
 }
 
-void CellPartition::remove(ColliderComponent* cc) {
-   aabb bounds = get_centered_bounds(cc);
-
+void CellPartition::remove(aabb const& bounds, ColliderComponent* cc) {
    int xmin = static_cast<int>((bounds.min.x - world_bounds.min.x) / cell_dimensions.x);
    int ymin = static_cast<int>((bounds.min.y - world_bounds.min.y) / cell_dimensions.y);
    int xmax = static_cast<int>((bounds.max.x - world_bounds.min.x) / cell_dimensions.x);

@@ -132,7 +132,7 @@ public:
             if (collider_area.overlap(cursor_area)) {
                // run a query on this object
                std::vector<ColliderComponent*> colliders;
-               quad_part.query(cc, colliders);
+               quad_part.query(collider_area, colliders);
                int static_sz = colliders.size();
                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
                for (ColliderComponent* cc2 : colliders) {
@@ -144,7 +144,7 @@ public:
 
                colliders.clear();
                
-               cell_part.query(cc, colliders);
+               cell_part.query(collider_area, colliders);
                SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
                for (ColliderComponent* cc2 : colliders) {
                   aabb cc2_area = cc2->bounding_box();
@@ -172,15 +172,18 @@ int main() {
    GhettoExtension ext;
 
    srand(time(NULL));
-   for (int i = 0; i < 100; i++) {
+   for (int i = 0; i < 10; i++) {
       statemgr::reset_game();
       GObject* n = new GObject;
       statemgr::get_object_list()->add_object(n);
       float rx = rand() % 980 + 10;
       float ry = rand() % 980 + 10;
 
+      if (i == 0) {
+         n->init(vec2(500, 500), 0, vec2(1, 1), std::to_string(i), false, false);
+      } else 
       n->init(vec2(rx, ry), 0, vec2(1, 1), std::to_string(i), false, false);
-      if (i < 40) {
+      if (i < 4) {
          n->add_component(std::make_unique<CircleCollider>(false, vec2(0, 0), vec2(), 30));
       } else {
          n->add_component(std::make_unique<CircleCollider>(true, vec2(20, 20), vec2(20, 20), 2));

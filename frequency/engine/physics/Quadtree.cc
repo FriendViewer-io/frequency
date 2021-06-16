@@ -10,17 +10,16 @@ static aabb get_centered_bounds(ColliderComponent* cc) {
 }
 
 // Assume insert if insert is called, cc will entirely fit in THIS node
-void Quadtree::insert(ColliderComponent* cc) {
+void Quadtree::insert(aabb const& bounds, ColliderComponent* cc) {
    if (leaf) {
       contained_objects.push_back(cc);
       if (contained_objects.size() > MAX_COLLIDERS) {
          subdivide();
       }
    } else {
-      aabb bounds = get_centered_bounds(cc);
       for (Quadtree* child : children) {
          if (child->cell_bounds.contains(bounds)) {
-            child->insert(cc);
+            child->insert(bounds, cc);
             return;
          }
       }
@@ -28,36 +27,35 @@ void Quadtree::insert(ColliderComponent* cc) {
    }
 }
 
-void Quadtree::query(ColliderComponent* cc, std::vector<ColliderComponent*>& results_out) {
+void Quadtree::query(aabb const& bounds, std::vector<ColliderComponent*>& results_out) {
    results_out.insert(results_out.end(), contained_objects.begin(), contained_objects.end());
 
    // find the position of where cc belongs, query on that
    if (!leaf) {
-      aabb bounds = get_centered_bounds(cc);
       for (Quadtree* child : children) {
          if (child->cell_bounds.contains(bounds)) {
-            child->query(cc, results_out);
+            child->query(bounds, results_out);
             return;
          }
       }
 
-      collect(results_out);
-      // overlapping if here
+      for (Quadtree* child : children) {
+         child->collect(results_out);
+      }
    }
 }
 
-void Quadtree::remove(ColliderComponent* cc) {
+void Quadtree::remove(aabb const& bounds, ColliderComponent* cc) {
    if (leaf) {
       auto it = std::find(contained_objects.begin(), contained_objects.end(), cc);
       if (it != contained_objects.end()) {
          contained_objects.erase(it);
       }
    } else {
-      aabb bounds = get_centered_bounds(cc);
       bool found = false;
       for (Quadtree* child : children) {
          if (child->cell_bounds.contains(bounds)) {
-            child->remove(cc);
+            child->remove(bounds, cc);
             found = true;
          }
       }
@@ -137,6 +135,6 @@ void Quadtree::subdivide() {
    // contained objects is empty, tmp contains that data
 
    for (ColliderComponent* cc : tmp) {
-      insert(cc);
+      insert(get_centered_bounds(cc), cc);
    }
 }

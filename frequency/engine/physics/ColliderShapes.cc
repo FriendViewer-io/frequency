@@ -27,9 +27,8 @@ vec2 ConvexPolyCollider::support(vec2 d) const {
       float distance = vi.dot(d);
       if (distance > max_distance) {
          max_distance = distance;
-         max_point = 
+         max_point = vi;
       }
-
    }
-
+   return max_point;
 }

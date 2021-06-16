@@ -33,10 +33,12 @@ void PhysicsExtension::pre_post_tick(float dt) {
       if (cc1->is_static()) {
          continue;
       }
+      aabb cc1_bbox = cc1->bounding_box();
+      cc1_bbox.shift(lhs->get_position());
 
       possible_collisions.clear();
-      quadtree->query(cc1, possible_collisions);
-      cell_partition->query(cc1, possible_collisions);
+      quadtree->query(cc1_bbox, possible_collisions);
+      cell_partition->query(cc1_bbox, possible_collisions);
       for (int j = 0; j < possible_collisions.size(); j++) {
          ColliderComponent* cc2 = possible_collisions[j];
          if (cc2 == cc1) {

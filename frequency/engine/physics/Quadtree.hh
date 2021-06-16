@@ -12,9 +12,9 @@ class Quadtree : public SpatialPartition {
 public:
    Quadtree(aabb const& bounds, int level) : cell_bounds(bounds), level(level) {}
 
-   void insert(ColliderComponent* cc) override;
-   void query(ColliderComponent* cc, std::vector<ColliderComponent*>& results_out) override;
-   void remove(ColliderComponent* cc) override;
+   void insert(aabb const& bounds, ColliderComponent* cc) override;
+   void query(aabb const& bounds, std::vector<ColliderComponent*>& results_out) override;
+   void remove(aabb const& bounds, ColliderComponent* cc) override;
    void clear();
 
    int get_level() const { return level; }

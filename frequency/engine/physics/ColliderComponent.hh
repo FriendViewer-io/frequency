@@ -24,11 +24,11 @@ public:
          acceleration(start_accel) {}
 
    void on_tick(float dt) override;
-   void on_post_tick(float dt) override {}
+   void on_post_tick(float dt) const override {}
    void on_message(GObject* sender, std::string const& msg) override {}
 
-   bool needs_clone() const { return true; }
    std::string_view get_component_type_name() const final { return "ColliderComponent"; }
+   uint32_t get_component_flags() const override { return EXECUTE_LAST_FLAG; }
    void commit(Component const& from) override;
    aabb const& bounding_box() const { return precomputed_bounds; }
    bool is_static() const { return _is_static; }

@@ -10,19 +10,25 @@ void ColliderComponent::on_tick(float dt) {
       refresh_bounds = false;
       update_bounds();
    }
-
    
    if (!_is_static) {
       // remove and reinsert
-      statemgr::get_physics_extension()->get_dynamic_partition().remove(this);
+      aabb old_bbox = bounding_box();
+      old_bbox.shift(get_parent()->get_position());
+      statemgr::get_physics_extension()->get_dynamic_partition().remove(old_bbox, this);
       // insert & remove from cell-based partition
       parent_data->position = (acceleration * dt * dt) * 0.5f + (velocity * dt) + parent_data->position;
       velocity = (acceleration * dt) + velocity;
-      statemgr::get_physics_extension()->get_dynamic_partition().insert(this);
+
+      aabb new_bbox = bounding_box();
+      new_bbox.shift(parent_data->position);
+      statemgr::get_physics_extension()->get_dynamic_partition().insert(new_bbox, this);
    } else {
       if (!was_static_inserted) {
          was_static_inserted = true;
-         statemgr::get_physics_extension()->get_static_partition().insert(this);
+         aabb bbox = bounding_box();
+         bbox.shift(parent_data->position);
+         statemgr::get_physics_extension()->get_static_partition().insert(bbox, this);
       }
    }
 }
@@ -37,9 +43,11 @@ void ColliderComponent::commit(Component const& from) {
 }
 
 ColliderComponent::~ColliderComponent() {
+   aabb bbox = bounding_box();
+   bbox.shift(get_parent()->get_position());
    if (_is_static) {
-      statemgr::get_physics_extension()->get_static_partition().remove(this);
+      statemgr::get_physics_extension()->get_static_partition().remove(bbox, this);
    } else {
-      statemgr::get_physics_extension()->get_dynamic_partition().remove(this);
+      statemgr::get_physics_extension()->get_dynamic_partition().remove(bbox, this);
    }
 }

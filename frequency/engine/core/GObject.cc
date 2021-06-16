@@ -32,11 +32,34 @@ void GObject::init(vec2 pos, float rot, vec2 scale, std::string const& name, boo
    }
 }
 
+void GObject::update_final_component_list() {
+   if (final_list_invalidated) {
+      final_component_list.clear();
+      for (auto& comp : new_component_list) {
+         if (comp->get_component_flags() & Component::EXECUTE_LAST_FLAG) {
+            final_component_list.push_back(comp.get());
+         }
+      }
+      for (auto& comp : singular_component_list) {
+         if (comp->get_component_flags() & Component::EXECUTE_LAST_FLAG) {
+            final_component_list.push_back(comp.get());
+         }
+      }
+      final_list_invalidated = false;
+   }
+}
+
 void GObject::tick(float dt) {
+   update_final_component_list();
    for (auto& comp : new_component_list) {
-      comp->on_tick(dt);
+      if (!(comp->get_component_flags() & Component::EXECUTE_LAST_FLAG)) {
+         comp->on_tick(dt);
+      }
    }
    for (auto& comp : singular_component_list) {
+      comp->on_tick(dt);
+   }
+   for (auto& comp : final_component_list) {
       comp->on_tick(dt);
    }
 }
@@ -49,10 +72,16 @@ void GObject::commit() {
 }
 
 void GObject::post_tick(float dt) {
+   update_final_component_list();
    for (auto& comp : new_component_list) {
-      comp->on_post_tick(dt);
+      if (!(comp->get_component_flags() & Component::EXECUTE_LAST_FLAG)) {
+         comp->on_post_tick(dt);
+      }
    }
    for (auto& comp : singular_component_list) {
+      comp->on_post_tick(dt);
+   }
+   for (auto& comp : final_component_list) {
       comp->on_post_tick(dt);
    }
 }
@@ -69,10 +98,16 @@ void GObject::on_message(GObject* sender, std::string const& message) {
       return;
    }
 
+   update_final_component_list();
    for (auto& comp : new_component_list) {
-      comp->on_message(sender, message);
+      if (!(comp->get_component_flags() & Component::EXECUTE_LAST_FLAG)) {
+         comp->on_message(sender, message);
+      }
    }
    for (auto& comp : singular_component_list) {
+      comp->on_message(sender, message);
+   }
+   for (auto& comp : final_component_list) {
       comp->on_message(sender, message);
    }
 
@@ -85,12 +120,13 @@ void GObject::add_component(std::unique_ptr<Component> component) {
    component->set_parent(this);
    component->set_reference_data(&new_data);
 
-   if (component->needs_clone()) {
+   if (component->get_component_flags() & Component::NO_CLONE_FLAG) {
+      singular_component_list.emplace_back(std::move(component));
+   } else {
       old_component_list.emplace_back(component->clone());
       new_component_list.emplace_back(std::move(component));
-   } else {
-      singular_component_list.emplace_back(std::move(component));
    }
+   final_list_invalidated = true;
 }
 
 void GObject::add_link(GObject* target, std::string const& state) {
