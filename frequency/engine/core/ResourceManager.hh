@@ -12,15 +12,19 @@
 
 class ResourceManager {
 public:
-   using ProcessCB = std::function<std::unique_ptr<Resource>(std::ifstream&)>;
+   using ProcessStreamCB = std::function<std::unique_ptr<Resource>(std::ifstream&)>;
+   using ProcessPathCB = std::function<std::unique_ptr<Resource>(std::string_view)>;
 
    template <typename T>
-   static std::optional<Token<T>> load_file(std::string_view path, ProcessCB&& loader) {
+   static std::optional<Token<T>> load_file(std::string_view path, ProcessStreamCB&& loader) {
       auto it = active_resources.find(path);
       if (it == active_resources.end()) {
          std::ifstream res_file(path);
          if (res_file.is_open()) {
             std::unique_ptr<Resource> processed = std::move(loader(res_file));
+            if (processed == nullptr) {
+               return std::nullopt;
+            }
             auto map_entry = active_resources.insert(
                 std::make_pair(std::string(path), ResourceRef(std::move(processed))));
             map_entry.first->second.res_name = map_entry.first->first;
@@ -28,6 +32,22 @@ public:
          } else {
             return std::nullopt;
          }
+      }
+      return Token<T>(&it->second);
+   }
+
+   template <typename T>
+   static std::optional<Token<T>> load_file(std::string_view path, ProcessPathCB&& loader) {
+      auto it = active_resources.find(path);
+      if (it == active_resources.end()) {
+         std::unique_ptr<Resource> processed = std::move(loader(path));
+         if (processed == nullptr) {
+            return std::nullopt;
+         }
+         auto map_entry = active_resources.insert(
+             std::make_pair(std::string(path), ResourceRef(std::move(processed))));
+         map_entry.first->second.res_name = map_entry.first->first;
+         return Token<T>(&map_entry.first->second);
       }
       return Token<T>(&it->second);
    }
