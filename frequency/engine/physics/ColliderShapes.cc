@@ -30,5 +30,6 @@ vec2 ConvexPolyCollider::support(vec2 d) const {
          max_point = vi;
       }
    }
-   return max_point;
+
+   return parent_data->position + max_point; 
 }

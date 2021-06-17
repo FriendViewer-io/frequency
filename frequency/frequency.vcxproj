@@ -64,19 +64,19 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\SDL2;$(SolutionDir)dependencies\include\glew;$(SolutionDir)frequency\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\DevIL;$(SolutionDir)dependencies\include\SDL2;$(SolutionDir)dependencies\include\glew;$(SolutionDir)frequency\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)dependencies\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;glew32.lib;DevIL.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)dependencies\bin\x64\SDL2.dll" "$(SolutionDir)$(Platform)\$(Configuration)\SDL2.dll"
 copy "$(SolutionDir)dependencies\bin\x64\glew32.dll" "$(SolutionDir)$(Platform)\$(Configuration)\glew32.dll"
-</Command>
+copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$(Configuration)\DevIL.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -88,7 +88,7 @@ copy "$(SolutionDir)dependencies\bin\x64\glew32.dll" "$(SolutionDir)$(Platform)\
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\SDL2;$(SolutionDir)dependencies\include\glew;$(SolutionDir)frequency\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\SDL2;$(SolutionDir)dependencies\include\glew;$(SolutionDir)frequency\;$(SolutionDir)dependencies\include\DevIL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -97,12 +97,12 @@ copy "$(SolutionDir)dependencies\bin\x64\glew32.dll" "$(SolutionDir)$(Platform)\
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)dependencies\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;opengl32.lib;glew32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;glew32.lib;DevIL.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)dependencies\bin\x64\SDL2.dll" "$(SolutionDir)$(Platform)\$(Configuration)\SDL2.dll"
 copy "$(SolutionDir)dependencies\bin\x64\glew32.dll" "$(SolutionDir)$(Platform)\$(Configuration)\glew32.dll"
-</Command>
+copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$(Configuration)\DevIL.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -7,9 +7,10 @@
 enum class CollisionShape { 
    CIRCLE,
    AABOX_CVP,
+   VMESH_CVP,
 
    CONVEX_POLY_START = AABOX_CVP,
-   CONVEX_POLY_END = AABOX_CVP,
+   CONVEX_POLY_END = VMESH_CVP,
 };
 
 class ColliderComponent : public Component {

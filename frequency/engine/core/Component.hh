@@ -24,7 +24,7 @@ public:
    virtual void on_post_tick(float dt) const = 0;
    virtual void on_message(GObject* sender, std::string const& msg) = 0;
    // Copy new component data to old component
-   virtual void commit(Component const& from) {}
+   virtual void commit(Component const& from) { }
    virtual std::unique_ptr<Component> clone() { return nullptr; }
 
    virtual std::string_view get_component_type_name() const = 0;

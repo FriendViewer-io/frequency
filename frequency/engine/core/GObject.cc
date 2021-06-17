@@ -123,7 +123,10 @@ void GObject::add_component(std::unique_ptr<Component> component) {
    if (component->get_component_flags() & Component::NO_CLONE_FLAG) {
       singular_component_list.emplace_back(std::move(component));
    } else {
-      old_component_list.emplace_back(component->clone());
+      auto old_comp = component->clone();
+      old_comp->set_parent(this);
+      old_comp->set_reference_data(&old_data);
+      old_component_list.emplace_back(std::move(old_comp));
       new_component_list.emplace_back(std::move(component));
    }
    final_list_invalidated = true;

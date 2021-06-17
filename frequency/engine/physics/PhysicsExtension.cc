@@ -45,7 +45,9 @@ void PhysicsExtension::pre_post_tick(float dt) {
             continue;
          }
 
-         if (collision::overlap_test_gjk(cc1, cc2)) {
+         collision::ContactManifold manifold;
+         if (collision::overlap_test(cc1, cc2, manifold)) {
+
          }
       }
    }

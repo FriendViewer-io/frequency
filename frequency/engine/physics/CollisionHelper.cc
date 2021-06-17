@@ -1,6 +1,7 @@
 #include "engine/physics/CollisionHelper.hh"
 
 #include <array>
+#include <list>
 
 #include "engine/core/GObject.hh"
 #include "engine/math/Vector.hh"
@@ -47,9 +48,24 @@ inline vec2 support_mk(ColliderComponent* a, ColliderComponent* b, vec2 v) {
 }
 
 // computes triple product for 2D: a x b x c
-inline vec2 triple_product(vec2 a, vec2 b, vec2 c) { return b * c.dot(a) - a * c.dot(b); }
-
+inline vec2 triple_product(vec2 a, vec2 b, vec2 c) { 
+   return b * c.dot(a) - a * c.dot(b);
+}
 inline bool same_dir(vec2 a, vec2 b) { return a.dot(b) > 0.f; }
+
+// vector perpendicular to a pointing to b
+inline vec2 perpendicular(vec2 a, vec2 b) {
+   vec2 triple = triple_product(a, b, a);
+   if (triple.mag_sq() < 0.000001f) {
+      vec2 perp = vec2(a.y, -a.x);
+      if (!same_dir(perp, b)) {
+         return -perp;
+      }
+      return perp;
+   }
+   return triple;
+}
+
 
 // Simplex handling is a mix of old code & Casey Muratori pseudocode
 void best_2simplex(Simplex& shape, vec2& dir_out) {
@@ -57,7 +73,7 @@ void best_2simplex(Simplex& shape, vec2& dir_out) {
 
    // Search perp to AB, origin is in AB region
    if (same_dir(ab, ao)) {
-      dir_out = triple_product(ab, ao, ab);
+      dir_out = perpendicular(ab, ao);
    } else {
       // Search towards AO, closest to A
       shape = {shape[0]};
@@ -76,7 +92,7 @@ bool best_3simplex(Simplex& shape, vec2& dir_out) {
       // If true, closest to AC
       if (same_dir(ac, ao)) {
          shape = {shape[0], shape[2]};
-         dir_out = triple_product(ac, ao, ac);
+         dir_out = perpendicular(ac, ao);
          return false;
       } else {
          // Otherwise closest to AB or A
@@ -108,7 +124,7 @@ bool next_simplex_and_dir(Simplex& shape, vec2& dir_out) {
 }
 
 // Basic GJK implementation
-bool overlap_test_gjk(ColliderComponent* a, ColliderComponent* b) {
+bool overlap_test_gjk(ColliderComponent* a, ColliderComponent* b, Simplex& simplex) {
    vec2 initial_search =
        a->get_parent()->get_staging_position() - b->get_parent()->get_staging_position();
 
@@ -118,7 +134,6 @@ bool overlap_test_gjk(ColliderComponent* a, ColliderComponent* b) {
 
    vec2 support_vec = support_mk(a, b, initial_search);
 
-   Simplex simplex;
    simplex.add_point(support_vec);
 
    vec2 search_dir = -support_vec;
@@ -154,7 +169,8 @@ bool overlap_test_circle_circle(CircleCollider* a, CircleCollider* b) {
    return false;
 }
 
-bool overlap_test_circle_convex(CircleCollider* a, ConvexPolyCollider* b) {
+bool overlap_test_circle_convex(CircleCollider* a, ConvexPolyCollider* b,
+                                ContactManifold& manifold) {
    enum Feature { EDGE, VERTEX };
    float min_dist_squared = FLT_MAX;
    Feature nearest_feature;
@@ -162,11 +178,12 @@ bool overlap_test_circle_convex(CircleCollider* a, ConvexPolyCollider* b) {
    vec2 nearest_edge;
 
    const vec2 a_pos = a->get_parent()->get_position();
+   const vec2 b_pos = b->get_parent()->get_position();
    const float radius = a->get_radius();
 
    for (int i = 0; i < b->get_num_vertices(); i++) {
-      vec2 vi = b->get_vertex(i);
-      vec2 vj = b->get_vertex((i + 1) & b->get_num_vertices());
+      vec2 vi = b->get_vertex(i) + b_pos;
+      vec2 vj = b->get_vertex((i + 1) % b->get_num_vertices()) + b_pos;
 
       vec2 ij = vj - vi;
       vec2 ia = a_pos - vi;
@@ -196,29 +213,51 @@ bool overlap_test_circle_convex(CircleCollider* a, ConvexPolyCollider* b) {
       }
    }
 
-   return (nearest_point - a_pos).mag_sq() < (radius * radius);
+   if ((nearest_point - a_pos).mag_sq() < (radius * radius)) {
+      manifold.a = a;
+      manifold.b = b;
+
+      manifold.normal = (nearest_point - a_pos).normalized();
+
+      manifold.pb = nearest_point;
+      manifold.pa = manifold.normal * radius + a_pos;
+
+      manifold.overlap_distance = (manifold.pb - manifold.pa).mag();
+      manifold.tangent = vec2(manifold.normal.y, -manifold.normal.x);
+      return true;
+   }
+   return false;
 }
 
-bool overlap_test(ColliderComponent* a, ColliderComponent* b) {
+bool overlap_test(ColliderComponent* a, ColliderComponent* b, ContactManifold& manifold) {
    CollisionShape a_shape = a->get_shape();
    CollisionShape b_shape = b->get_shape();
 
    if (a_shape == CollisionShape::CIRCLE && b_shape == CollisionShape::CIRCLE) {
-      return overlap_test_circle_circle(static_cast<CircleCollider*>(a),
-                                        static_cast<CircleCollider*>(b));
-
+      CircleCollider* a_circle = static_cast<CircleCollider*>(a);
+      CircleCollider* b_circle = static_cast<CircleCollider*>(b);
+      if (overlap_test_circle_circle(a_circle, b_circle)) {
+         generate_contacts_circle_circle(a_circle, b_circle, manifold);
+         return true;
+      }
+      return false;
    } else if (a_shape == CollisionShape::CIRCLE && b_shape >= CollisionShape::CONVEX_POLY_START &&
               a_shape <= CollisionShape::CONVEX_POLY_END) {
       return overlap_test_circle_convex(static_cast<CircleCollider*>(a),
-                                        static_cast<ConvexPolyCollider*>(b));
+                                        static_cast<ConvexPolyCollider*>(b), manifold);
 
    } else if (b_shape == CollisionShape::CIRCLE && a_shape >= CollisionShape::CONVEX_POLY_START &&
               a_shape <= CollisionShape::CONVEX_POLY_END) {
       return overlap_test_circle_convex(static_cast<CircleCollider*>(b),
-                                        static_cast<ConvexPolyCollider*>(a));
+                                        static_cast<ConvexPolyCollider*>(a), manifold);
 
    } else {
-      return overlap_test_gjk(a, b);
+      Simplex simplex;
+      if (overlap_test_gjk(a, b, simplex)) {
+         generate_contacts_epa(a, b, manifold, simplex);
+         return true;
+      }
+      return false;
    }
 }
 
@@ -240,27 +279,59 @@ void generate_contacts_circle_circle(CircleCollider* a, CircleCollider* b,
    manifold.overlap_distance = (a->get_radius() + b->get_radius()) - dist;
 }
 
-void generate_contacts(ColliderComponent* a, ColliderComponent* b, ContactManifold& manifold) {
-   CollisionShape a_shape = a->get_shape();
-   CollisionShape b_shape = b->get_shape();
-
-   if (a_shape == CollisionShape::CIRCLE && b_shape == CollisionShape::CIRCLE) {
-      return generate_contacts_circle_circle(static_cast<CircleCollider*>(a),
-                                             static_cast<CircleCollider*>(b), manifold);
-
-   } else if (a_shape == CollisionShape::CIRCLE && b_shape >= CollisionShape::CONVEX_POLY_START &&
-              a_shape <= CollisionShape::CONVEX_POLY_END) {
-      // return overlap_test_circle_convex(static_cast<CircleCollider*>(a),
-      //                                   static_cast<ConvexPolyCollider*>(b));
-
-   } else if (b_shape == CollisionShape::CIRCLE && a_shape >= CollisionShape::CONVEX_POLY_START &&
-              a_shape <= CollisionShape::CONVEX_POLY_END) {
-      // return overlap_test_circle_convex(static_cast<CircleCollider*>(b),
-      //                                   static_cast<ConvexPolyCollider*>(a));
-
-   } else {
-      // return overlap_test_gjk(a, b);
+void generate_contacts_epa(ColliderComponent* a, ColliderComponent* b, ContactManifold& manifold,
+                           Simplex const& starter) {
+   using polytope_it = std::list<vec2>::iterator;
+   std::list<vec2> polytope;
+   for (vec2 const& pt : starter) {
+      polytope.push_back(pt);
    }
+
+   float min_dist = FLT_MAX;
+   polytope_it min_idx;
+   vec2 min_norm;
+
+   while (min_dist == FLT_MAX) {
+      for (polytope_it i = polytope.begin(); i != polytope.end(); i++) {
+         polytope_it j = std::next(i);
+         if (j == polytope.end()) {
+            j = polytope.begin();
+         }
+
+         vec2 vi = *i;
+         vec2 vj = *j;
+
+         vec2 ij = vj - vi;
+
+         vec2 normal = perpendicular(ij, vi).normalized();
+         float vi_dist = vi.dot(normal);
+         if (vi_dist < 0.f) {
+            normal = -normal;
+            vi_dist = -vi_dist;
+         }
+
+         if (vi_dist < min_dist) {
+            min_dist = vi_dist;
+            min_norm = normal;
+            min_idx = j;
+         }
+      }
+
+      vec2 support = support_mk(a, b, min_norm);
+      float support_dist = min_norm.dot(support);
+
+      if (fabs(support_dist - min_dist) > 0.001f) {
+         min_dist = FLT_MAX;
+         polytope.insert(min_idx, support);
+      }
+   }
+
+   manifold.a = a;
+   manifold.b = b;
+
+   manifold.normal = min_norm;
+   manifold.overlap_distance = min_dist;
+   manifold.tangent = vec2(min_norm.y, -min_norm.x);
 }
 
 }  // namespace collision
