@@ -33,3 +33,19 @@ vec2 ConvexPolyCollider::support(vec2 d) const {
 
    return parent_data->position + max_point; 
 }
+
+void ConvexPolyCollider::update_centroid() {
+   float a = 0, signed_area = 0;
+
+   for (int i = 0; i < get_num_vertices(); i++) {
+      vec2 p0, p1;
+      p0 = get_vertex(i);
+      p1 = get_vertex((i + 1) % get_num_vertices());
+      a = p0.x * p1.y - p1.x * p0.y;
+      signed_area += a;
+      precomputed_centroid.x += (p0.x + p1.x) * a;
+      precomputed_centroid.y += (p0.y + p1.y) * a;
+   }
+
+   precomputed_centroid /= (3.f * signed_area);
+}

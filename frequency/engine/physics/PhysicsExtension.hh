@@ -18,6 +18,8 @@ public:
    void pre_post_tick(float dt) override;
    void tick_end(float dt) override { collider_objects.clear(); }
    void extension_reset() override {}
+   vec2 const& get_gravity() const { return gravity; }
+   void set_gravity(vec2 const& gravity) { this->gravity = gravity; }
 
    std::string_view extension_name() const { return "PhysicsExtension"; }
 
@@ -28,4 +30,5 @@ private:
    std::vector<GObject*> collider_objects;
    SpatialPartition* quadtree;
    SpatialPartition* cell_partition;
+   vec2 gravity;
 };

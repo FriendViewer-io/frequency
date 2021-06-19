@@ -60,6 +60,9 @@
     <ClCompile Include="engine\physics\CellPartition.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\physics\Solver.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format">
@@ -116,6 +119,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\physics\CellPartition.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\ConvexPolyCollider.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\Solver.hh">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

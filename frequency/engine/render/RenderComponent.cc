@@ -22,3 +22,12 @@
 //       statemgr::get_physics_extension()->get_dynamic_partition().remove(this);
 //    }
 // }
+
+//    ILuint img = ilGenImage();
+//    ilBindImage(img);
+//    ilLoadImage("C:\\Users\\Crash\\Source\\Repos\\frequency\\frequency\\patchy.png");
+
+//    int width = ilGetInteger(IL_IMAGE_WIDTH);
+//    int height = ilGetInteger(IL_IMAGE_HEIGHT);
+
+//    uint8_t* data = ilGetData();

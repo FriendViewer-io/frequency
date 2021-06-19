@@ -71,7 +71,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)dependencies\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;opengl32.lib;glew32.lib;DevIL.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;glew32.lib;DevIL.lib;user32.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)dependencies\bin\x64\SDL2.dll" "$(SolutionDir)$(Platform)\$(Configuration)\SDL2.dll"
@@ -97,7 +97,7 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)dependencies\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;opengl32.lib;glew32.lib;DevIL.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;glew32.lib;DevIL.lib;user32.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)dependencies\bin\x64\SDL2.dll" "$(SolutionDir)$(Platform)\$(Configuration)\SDL2.dll"
@@ -120,6 +120,7 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
     <ClCompile Include="engine\physics\CollisionHelper.cc" />
     <ClCompile Include="engine\physics\PhysicsExtension.cc" />
     <ClCompile Include="engine\physics\Quadtree.cc" />
+    <ClCompile Include="engine\physics\Solver.cc" />
     <ClCompile Include="frequency_main.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -140,8 +141,10 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
     <ClInclude Include="engine\physics\CircleCollider.hh" />
     <ClInclude Include="engine\physics\ColliderComponent.hh" />
     <ClInclude Include="engine\physics\CollisionHelper.hh" />
+    <ClInclude Include="engine\physics\ConvexPolyCollider.hh" />
     <ClInclude Include="engine\physics\PhysicsExtension.hh" />
     <ClInclude Include="engine\physics\Quadtree.hh" />
+    <ClInclude Include="engine\physics\Solver.hh" />
     <ClInclude Include="engine\physics\SpatialPartition.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

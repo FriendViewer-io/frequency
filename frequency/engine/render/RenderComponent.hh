@@ -4,23 +4,23 @@
 #include "engine/math/AABB.hh"
 #include "engine/math/Vector.hh"
 
-enum class RenderShape { CIRCLE, POLY };
 
-class RenderShapeComponent : public Component {
+class RenderComponent : public Component {
 public:
-   RenderShapeComponent() {}
+   RenderComponent() {}
 
-   void on_tick(float dt) override;
-   void on_post_tick(float dt) override {}
+   void on_tick(float dt) override {}
+   void on_post_tick(float dt) const override {}
    void on_message(GObject* sender, std::string const& msg) override {}
 
-   std::string_view get_component_type_name() const final { return "RenderShapeComponent"; }
+   std::string_view get_component_type_name() const final { return "RenderComponent"; }
    void commit(Component const& from) override;
 
-   virtual RenderShape get_shape() const = 0;
+   void bind_data();
 
-   virtual ~RenderShapeComponent();
+   virtual ~RenderComponent() {}
 
 protected:
+   
 
 };

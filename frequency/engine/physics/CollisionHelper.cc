@@ -11,6 +11,9 @@
 
 namespace collision {
 
+constexpr float OVERLAP_EPSILON = 0.0001f;
+constexpr float TRIPLE_EPSILON = 0.000001f;
+
 // Stolen from WinterDev, may be hijacked for EPA
 struct Simplex {
    static constexpr size_t MAX_SIMPLEX = 3;
@@ -49,14 +52,15 @@ inline vec2 support_mk(ColliderComponent* a, ColliderComponent* b, vec2 v) {
 
 // computes triple product for 2D: a x b x c
 inline vec2 triple_product(vec2 a, vec2 b, vec2 c) { 
-   return b * c.dot(a) - a * c.dot(b);
+   float d = a.x * b.y - b.x * a.y;
+   return vec2(-c.y * d, c.x * d);
 }
 inline bool same_dir(vec2 a, vec2 b) { return a.dot(b) > 0.f; }
 
 // vector perpendicular to a pointing to b
 inline vec2 perpendicular(vec2 a, vec2 b) {
    vec2 triple = triple_product(a, b, a);
-   if (triple.mag_sq() < 0.000001f) {
+   if (triple.mag_sq() < TRIPLE_EPSILON) {
       vec2 perp = vec2(a.y, -a.x);
       if (!same_dir(perp, b)) {
          return -perp;
@@ -171,9 +175,7 @@ bool overlap_test_circle_circle(CircleCollider* a, CircleCollider* b) {
 
 bool overlap_test_circle_convex(CircleCollider* a, ConvexPolyCollider* b,
                                 ContactManifold& manifold) {
-   enum Feature { EDGE, VERTEX };
    float min_dist_squared = FLT_MAX;
-   Feature nearest_feature;
    vec2 nearest_point;
    vec2 nearest_edge;
 
@@ -199,7 +201,6 @@ bool overlap_test_circle_convex(CircleCollider* a, ConvexPolyCollider* b,
          const float distance_to_circle = (a_pos - point_on_ij).mag_sq();
          if (distance_to_circle < min_dist_squared) {
             min_dist_squared = distance_to_circle;
-            nearest_feature = EDGE;
             nearest_edge = ij;
             nearest_point = point_on_ij;
          }
@@ -208,7 +209,6 @@ bool overlap_test_circle_convex(CircleCollider* a, ConvexPolyCollider* b,
       const float distance_to_vi = (vi - a_pos).mag_sq();
       if (distance_to_vi < min_dist_squared) {
          min_dist_squared = distance_to_vi;
-         nearest_feature = VERTEX;
          nearest_point = vi;
       }
    }
@@ -305,10 +305,6 @@ void generate_contacts_epa(ColliderComponent* a, ColliderComponent* b, ContactMa
 
          vec2 normal = perpendicular(ij, vi).normalized();
          float vi_dist = vi.dot(normal);
-         if (vi_dist < 0.f) {
-            normal = -normal;
-            vi_dist = -vi_dist;
-         }
 
          if (vi_dist < min_dist) {
             min_dist = vi_dist;
@@ -317,10 +313,14 @@ void generate_contacts_epa(ColliderComponent* a, ColliderComponent* b, ContactMa
          }
       }
 
+      if (min_dist < OVERLAP_EPSILON) {
+         break;
+      }
+
       vec2 support = support_mk(a, b, min_norm);
       float support_dist = min_norm.dot(support);
 
-      if (fabs(support_dist - min_dist) > 0.001f) {
+      if (fabs(support_dist - min_dist) > OVERLAP_EPSILON) {
          min_dist = FLT_MAX;
          polytope.insert(min_idx, support);
       }
