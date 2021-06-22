@@ -63,6 +63,27 @@
     <ClCompile Include="engine\physics\Solver.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\render\ImageResource.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\RenderComponent.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\RenderExtension.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\RenderMeshResource.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\ShaderResource.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\ShapeComponent.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\ImageComponent.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format">
@@ -125,6 +146,30 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\physics\Solver.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\AABoxCollider.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\MeshCollider.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\ImageResource.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\RenderComponent.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\RenderExtension.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\RenderMeshResource.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\ShaderResource.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\ImageComponent.hh">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

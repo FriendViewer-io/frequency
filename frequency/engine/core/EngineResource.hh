@@ -6,7 +6,7 @@
 // All resources must be destructible, thus inherit from Resource
 class Resource {
 public:
-   virtual ~Resource();
+   virtual ~Resource() {}
 };
 
 struct ResourceRef {

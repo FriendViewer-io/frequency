@@ -2,7 +2,7 @@
 
 #include <gl/glew.h>
 
-RenderMeshResource::RenderMeshResource() : loaded(false) {}
+RenderMeshResource::RenderMeshResource() : loaded(false), index_count(0) {}
 
 void RenderMeshResource::load_mesh(MeshDescriptor& mesh_data) {
    if (loaded) {
@@ -19,22 +19,29 @@ void RenderMeshResource::load_mesh(MeshDescriptor& mesh_data) {
                 mesh_data.raw_vertex_data.data(), GL_STATIC_DRAW);
 
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-   glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_data.raw_index_data.size() * sizeof(int),
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_data.raw_index_data.size() * sizeof(uint32_t),
                 mesh_data.raw_index_data.data(), GL_STATIC_DRAW);
 
-   int net_offset = 0;
+   int total_offset = 0;
+   for (int i : mesh_data.vertex_attribute_offsets) {
+      total_offset += i;
+   }
+
+   int accum_offset = 0;
    for (int i = 0; i < mesh_data.vertex_attribute_offsets.size(); i++) {
-      glVertexAttribPointer(i, mesh_data.vertex_attribute_offsets[0], GL_FLOAT, GL_TRUE,
-                            mesh_data.vertex_attribute_offsets.size() * sizeof(float),
-                            reinterpret_cast<void*>(net_offset * sizeof(float)));
+      glVertexAttribPointer(i, mesh_data.vertex_attribute_offsets[i], GL_FLOAT, GL_FALSE,
+                            total_offset * sizeof(float),
+                            reinterpret_cast<void*>(accum_offset * sizeof(float)));
+
       glEnableVertexAttribArray(i);
-      net_offset += mesh_data.vertex_attribute_offsets[0];
+      accum_offset += mesh_data.vertex_attribute_offsets[0];
    }
 
    loaded = true;
+   index_count = static_cast<int>(mesh_data.raw_index_data.size());
 }
 
-void RenderMeshResource::bind_mesh() {
+void RenderMeshResource::bind_mesh() const {
    if (!loaded) {
       return;
    }

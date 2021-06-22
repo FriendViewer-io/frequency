@@ -86,9 +86,7 @@ void GObject::post_tick(float dt) {
    }
 }
 
-void GObject::munt() {
-   flags |= PENDING_DESTRUCTION_FLAG;
-}
+void GObject::munt() { flags |= PENDING_DESTRUCTION_FLAG; }
 
 void GObject::on_message(GObject* sender, std::string const& message) {
    if (messaging_disabled()) {
@@ -114,22 +112,6 @@ void GObject::on_message(GObject* sender, std::string const& message) {
    if (message == "$$destroy") {
       remove_all_links(sender);
    }
-}
-
-void GObject::add_component(std::unique_ptr<Component> component) {
-   component->set_parent(this);
-   component->set_reference_data(&new_data);
-
-   if (component->get_component_flags() & Component::NO_CLONE_FLAG) {
-      singular_component_list.emplace_back(std::move(component));
-   } else {
-      auto old_comp = component->clone();
-      old_comp->set_parent(this);
-      old_comp->set_reference_data(&old_data);
-      old_component_list.emplace_back(std::move(old_comp));
-      new_component_list.emplace_back(std::move(component));
-   }
-   final_list_invalidated = true;
 }
 
 void GObject::add_link(GObject* target, std::string const& state) {
@@ -251,7 +233,8 @@ Component const* GObject::get_staging_component(std::string_view type_name) cons
 }
 
 Component* GObject::get_staging_component(std::string_view type_name) {
-   return const_cast<Component*>(static_cast<GObject const*>(this)->get_staging_component(type_name));
+   return const_cast<Component*>(
+       static_cast<GObject const*>(this)->get_staging_component(type_name));
 }
 
 bool GObject::messaging_disabled() const { return (flags & MESSAGING_DISABLE_FLAG) != 0; }

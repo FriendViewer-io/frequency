@@ -2,9 +2,9 @@
 
 #include <map>
 #include <memory>
+#include <queue>
 #include <string>
 #include <vector>
-#include <queue>
 
 #include "engine/core/Component.hh"
 #include "engine/math/Vector.hh"
@@ -31,7 +31,28 @@ public:
    void munt();
    void on_message(GObject* sender, std::string const& message);
 
-   void add_component(std::unique_ptr<Component> component);
+   template <typename T, typename... Args>
+   T* create_component(Args... cons) {
+      static_assert(std::is_base_of_v<Component, T>,
+                    "create_component can only construct types derived from Component!");
+      auto comp = std::make_unique<T>(cons...);
+      T* comp_ret = comp.get();
+      comp->set_parent(this);
+      comp->set_reference_data(&new_data);
+
+      if (comp->get_component_flags() & Component::NO_CLONE_FLAG) {
+         singular_component_list.emplace_back(std::move(comp));
+      } else {
+         auto old_comp = comp->clone();
+         old_comp->set_parent(this);
+         old_comp->set_reference_data(&old_data);
+         old_component_list.emplace_back(std::move(old_comp));
+         new_component_list.emplace_back(std::move(comp));
+      }
+      final_list_invalidated = true;
+      return comp_ret;
+   }
+
    void add_link(GObject* target, std::string const& state);
    void remove_link(GObject* target, std::string const& state);
    void remove_all_links(GObject* target);

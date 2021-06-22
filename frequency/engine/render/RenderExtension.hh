@@ -14,15 +14,17 @@ public:
 
    // Update window events
    void pre_tick(float dt) override;
-
    void pre_post_tick(float dt) override {}
 
    // Render all GObjects that have a RenderComponent
    void tick_end(float dt) override;
-
    void extension_reset() override {}
 
    std::string_view extension_name() const { return "RenderExtension"; }
+
+   int window_width() const;
+   int window_height() const;
+   void window_resize(int width, int height);
 
 private:
    SDL_Renderer* renderer;

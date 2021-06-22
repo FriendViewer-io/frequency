@@ -61,7 +61,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)dependencies\include\DevIL;$(SolutionDir)dependencies\include\SDL2;$(SolutionDir)dependencies\include\glew;$(SolutionDir)frequency\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -121,6 +121,13 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
     <ClCompile Include="engine\physics\PhysicsExtension.cc" />
     <ClCompile Include="engine\physics\Quadtree.cc" />
     <ClCompile Include="engine\physics\Solver.cc" />
+    <ClCompile Include="engine\render\ImageComponent.cc" />
+    <ClCompile Include="engine\render\ImageResource.cc" />
+    <ClCompile Include="engine\render\RenderComponent.cc" />
+    <ClCompile Include="engine\render\RenderExtension.cc" />
+    <ClCompile Include="engine\render\RenderMeshResource.cc" />
+    <ClCompile Include="engine\render\ShaderResource.cc" />
+    <ClCompile Include="engine\render\ShapeComponent.cc" />
     <ClCompile Include="frequency_main.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -137,15 +144,23 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
     <ClInclude Include="engine\core\Token.hh" />
     <ClInclude Include="engine\math\AABB.hh" />
     <ClInclude Include="engine\math\Vector.hh" />
+    <ClInclude Include="engine\physics\AABoxCollider.hh" />
     <ClInclude Include="engine\physics\CellPartition.hh" />
     <ClInclude Include="engine\physics\CircleCollider.hh" />
     <ClInclude Include="engine\physics\ColliderComponent.hh" />
     <ClInclude Include="engine\physics\CollisionHelper.hh" />
     <ClInclude Include="engine\physics\ConvexPolyCollider.hh" />
+    <ClInclude Include="engine\physics\MeshCollider.hh" />
     <ClInclude Include="engine\physics\PhysicsExtension.hh" />
     <ClInclude Include="engine\physics\Quadtree.hh" />
     <ClInclude Include="engine\physics\Solver.hh" />
     <ClInclude Include="engine\physics\SpatialPartition.hh" />
+    <ClInclude Include="engine\render\ImageComponent.hh" />
+    <ClInclude Include="engine\render\ImageResource.hh" />
+    <ClInclude Include="engine\render\RenderComponent.hh" />
+    <ClInclude Include="engine\render\RenderExtension.hh" />
+    <ClInclude Include="engine\render\RenderMeshResource.hh" />
+    <ClInclude Include="engine\render\ShaderResource.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

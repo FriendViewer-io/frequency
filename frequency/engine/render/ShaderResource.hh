@@ -1,18 +1,26 @@
 #pragma once
 
+#include <map>
+#include <memory>
+#include <string_view>
+
 #include "engine/core/EngineResource.hh"
+#include "engine/math/Vector.hh"
 
 class ShaderResource : public Resource {
 public:
-    ~ShaderResource();
+   void load_shader(std::string_view vs_data, std::string_view fs_data);
+   void load_all_uniforms();
+   void use_program() const;
+   void set_uniform(std::string_view name, float val) const;
+   void set_uniform(std::string_view name, vec2 val) const;
+   void set_uniform_i(std::string_view name, int val) const;
 
-    void load_fragment(std::string_view fragment);
-    void load_vertex(std::string_view vertex);
-    void link_program();
-    void use_program();
+   ~ShaderResource();
 
 private:
-    unsigned int shaderProgram;
-    unsigned int fragmentShader;
-    unsigned int vertexShader;
+   unsigned int shader_program;
+   std::map<std::string, int, std::less<>> uniform_map;
 };
+
+std::unique_ptr<Resource> load_shader_from_file(std::string_view path);
