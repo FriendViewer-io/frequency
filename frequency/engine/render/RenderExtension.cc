@@ -1,15 +1,15 @@
 #include "engine/render/RenderExtension.hh"
 
+#include "engine/core/GOList.hh"
+#include "engine/core/GObject.hh"
+#include "engine/core/StateManager.hh"
+#include "engine/render/RenderComponent.hh"
+
 // clang-format off
 #include <gl/glew.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 // clang-format on
-
-#include "engine/core/GOList.hh"
-#include "engine/core/GObject.hh"
-#include "engine/core/StateManager.hh"
-#include "engine/render/RenderComponent.hh"
 
 void RenderExtension::extension_init() {
    if (SDL_Init(SDL_INIT_VIDEO) < 0) {

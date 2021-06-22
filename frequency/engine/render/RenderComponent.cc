@@ -1,9 +1,11 @@
 #include "engine/render/RenderComponent.hh"
 
-#include <SDL_opengl.h>
-
 #include "engine/render/RenderMeshResource.hh"
 #include "engine/render/ShaderResource.hh"
+
+// clang-format off
+#include <SDL_opengl.h>
+// clang-format on
 
 void RenderComponent::bind_data() const {
    if (shader) {

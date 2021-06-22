@@ -127,7 +127,6 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
     <ClCompile Include="engine\render\RenderExtension.cc" />
     <ClCompile Include="engine\render\RenderMeshResource.cc" />
     <ClCompile Include="engine\render\ShaderResource.cc" />
-    <ClCompile Include="engine\render\ShapeComponent.cc" />
     <ClCompile Include="frequency_main.cc" />
   </ItemGroup>
   <ItemGroup>

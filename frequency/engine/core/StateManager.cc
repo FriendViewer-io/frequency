@@ -133,7 +133,8 @@ void core_game_loop(float time_delta, std::function<void()> const& post_extensio
       });
 
       const ch::time_point cur_time = sc::now();
-      const ch::milliseconds skip_time_cutoff = ch::milliseconds(static_cast<uint64_t>(10 * time_delta * 1000.f));
+      const ch::milliseconds skip_time_cutoff =
+          ch::milliseconds(static_cast<uint64_t>(10 * time_delta * 1000.f));
       const float us_per_tick = time_delta * 1000000.f;
       tick_count++;
 
@@ -141,7 +142,9 @@ void core_game_loop(float time_delta, std::function<void()> const& post_extensio
           start_time + ch::milliseconds(static_cast<uint64_t>(tick_count * time_delta * 1000.f));
 
       if (cur_time - next_tick_start > skip_time_cutoff) {
-         auto new_tick_elapsed = ch::duration_cast<std::chrono::microseconds>(cur_time - start_time).count() / us_per_tick;
+         auto new_tick_elapsed =
+             ch::duration_cast<std::chrono::microseconds>(cur_time - start_time).count() /
+             us_per_tick;
          tick_count = static_cast<uint64_t>(new_tick_elapsed);
       }
       std::this_thread::sleep_until(next_tick_start);

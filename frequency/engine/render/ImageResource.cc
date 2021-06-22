@@ -1,7 +1,9 @@
 #include "engine/render/ImageResource.hh"
 
+// clang-format off
 #include <IL/il.h>
 #include <gl/glew.h>
+// clang-format on
 
 ImageResource::ImageResource(std::string_view path) : file_loaded(false) {
    if (!il_initialized) {

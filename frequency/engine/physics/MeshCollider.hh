@@ -9,7 +9,7 @@ public:
    MeshCollider(std::vector<vec2>&& vertices, bool s)
        : ConvexPolyCollider(s), vertices(std::move(vertices)) {}
 
-   int get_num_vertices() const override { return vertices.size(); }
+   int get_num_vertices() const override { return static_cast<int>(vertices.size()); }
 
    vec2 get_vertex(int index) const override { return vertices[index]; }
 

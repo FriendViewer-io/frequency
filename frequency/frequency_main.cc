@@ -6,8 +6,6 @@
 
 #undef main
 
-#include <Windows.h>
-
 #include "engine/core/Component.hh"
 #include "engine/core/Extension.hh"
 #include "engine/core/GOList.hh"

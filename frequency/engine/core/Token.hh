@@ -13,9 +13,7 @@ class Token {
 public:
    Token() { resource = nullptr; }
    Token(Token<T> const& rv) : Token(rv.resource) {}
-   Token(Token<T>&& rv) : resource(rv.resource) {
-      rv.resource = nullptr;
-   }
+   Token(Token<T>&& rv) : resource(rv.resource) { rv.resource = nullptr; }
 
    Token<T>& operator=(Token<T> const& rv) {
       resource = rv.resource;

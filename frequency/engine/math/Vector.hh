@@ -51,28 +51,16 @@ struct vec2 {
       y /= rhs.y;
       return *this;
    }
-   float& operator[](size_t idx) {
-      return arr[idx];
-   }
-   float operator[](size_t idx) const {
-      return arr[idx];
-   }
-   vec2 operator-() const {
-      return vec2(-x, -y);
-   }
-   bool operator==(vec2 const& rhs) const {
-      return x == rhs.x && y == rhs.y;
-   }
+   float& operator[](size_t idx) { return arr[idx]; }
+   float operator[](size_t idx) const { return arr[idx]; }
+   vec2 operator-() const { return vec2(-x, -y); }
+   bool operator==(vec2 const& rhs) const { return x == rhs.x && y == rhs.y; }
 
    inline float dot(vec2 const& rhs) const { return x * rhs.x + y * rhs.y; }
    inline float mag_sq() const { return dot(*this); }
    inline float mag() const { return sqrtf(mag_sq()); }
-   void normalize() {
-      *this /= mag();
-   }
-   vec2 normalized() const {
-      return *this / mag();
-   }
+   void normalize() { *this /= mag(); }
+   vec2 normalized() const { return *this / mag(); }
    void rotate(float angle);
    vec2 rotated(float angle) const;
    void project(vec2 onto);

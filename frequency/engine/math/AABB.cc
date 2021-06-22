@@ -27,6 +27,5 @@ bool aabb::overlap(aabb const& rhs) const {
 }
 
 bool aabb::contains(aabb const& rhs) const {
-   return (rhs.min.x > min.x && rhs.max.x < max.x &&
-           rhs.min.y > min.y && rhs.max.y < max.y);
+   return (rhs.min.x > min.x && rhs.max.x < max.x && rhs.min.y > min.y && rhs.max.y < max.y);
 }

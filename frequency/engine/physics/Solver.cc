@@ -1,8 +1,8 @@
 #include "engine/physics/Solver.hh"
 
+#include "engine/core/GObject.hh"
 #include "engine/physics/ColliderComponent.hh"
 #include "engine/physics/CollisionHelper.hh"
-#include "engine/core/GObject.hh"
 
 namespace solver {
 solver_func active_solver = push_noimpulse_solver;

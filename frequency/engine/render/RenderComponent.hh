@@ -19,7 +19,7 @@ public:
    uint32_t get_component_flags() const { return Component::NO_CLONE_FLAG; }
 
    std::string_view get_component_type_name() const final { return "RenderComponent"; }
-   
+
    virtual void bind_data() const;
    int get_draw_count() const;
 

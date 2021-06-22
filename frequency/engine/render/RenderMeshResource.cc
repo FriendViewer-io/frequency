@@ -1,6 +1,8 @@
 #include "engine/render/RenderMeshResource.hh"
 
+// clang-format off
 #include <gl/glew.h>
+// clang-format on
 
 RenderMeshResource::RenderMeshResource() : loaded(false), index_count(0) {}
 

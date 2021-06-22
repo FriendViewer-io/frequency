@@ -78,9 +78,6 @@
     <ClCompile Include="engine\render\ShaderResource.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\render\ShapeComponent.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="engine\render\ImageComponent.cc">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -8,8 +8,7 @@
 #include "engine/physics/Quadtree.hh"
 #include "engine/physics/Solver.hh"
 
-PhysicsExtension::PhysicsExtension(aabb world_bounds, vec2 cell_dims)
-   : gravity(0, -100.f) {
+PhysicsExtension::PhysicsExtension(aabb world_bounds, vec2 cell_dims) : gravity(0, -100.f) {
    quadtree = new Quadtree(world_bounds, 0);
    cell_partition = new CellPartition(world_bounds, cell_dims);
 }

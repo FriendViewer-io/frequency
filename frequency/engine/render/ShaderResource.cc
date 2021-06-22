@@ -1,4 +1,4 @@
-#include "ShaderResource.hh"
+#include "engine/render/ShaderResource.hh"
 
 #include <array>
 #include <fstream>
@@ -78,7 +78,8 @@ void ShaderResource::load_all_uniforms() {
       glGetActiveUniform(shader_program, static_cast<GLuint>(i), 1023, &name_len, &size,
                          &uniform_type, name_tmp.data());
       std::string uniform_name(name_tmp.data(), name_len);
-      uniform_map.emplace(std::move(uniform_name), glGetUniformLocation(shader_program, name_tmp.data()));
+      uniform_map.emplace(std::move(uniform_name),
+                          glGetUniformLocation(shader_program, name_tmp.data()));
    }
 }
 

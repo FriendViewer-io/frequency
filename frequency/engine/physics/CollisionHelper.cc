@@ -51,7 +51,7 @@ inline vec2 support_mk(ColliderComponent* a, ColliderComponent* b, vec2 v) {
 }
 
 // computes triple product for 2D: a x b x c
-inline vec2 triple_product(vec2 a, vec2 b, vec2 c) { 
+inline vec2 triple_product(vec2 a, vec2 b, vec2 c) {
    float d = a.x * b.y - b.x * a.y;
    return vec2(-c.y * d, c.x * d);
 }
@@ -69,7 +69,6 @@ inline vec2 perpendicular(vec2 a, vec2 b) {
    }
    return triple;
 }
-
 
 // Simplex handling is a mix of old code & Casey Muratori pseudocode
 void best_2simplex(Simplex& shape, vec2& dir_out) {

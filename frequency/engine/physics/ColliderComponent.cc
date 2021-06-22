@@ -12,14 +12,15 @@ void ColliderComponent::on_tick(float dt) {
       update_centroid();
    }
    const vec2 local_gravity = statemgr::get_physics_extension()->get_gravity() * gravity_scalar;
-   
+
    if (!_is_static) {
       // remove and reinsert
       aabb old_bbox = bounding_box();
       old_bbox.shift(get_parent()->get_position());
       statemgr::get_physics_extension()->get_dynamic_partition().remove(old_bbox, this);
       // insert & remove from cell-based partition
-      parent_data->position = ((acceleration + local_gravity) * dt * dt) * 0.5f + (velocity * dt) + parent_data->position;
+      parent_data->position = ((acceleration + local_gravity) * dt * dt) * 0.5f + (velocity * dt) +
+                              parent_data->position;
       velocity = ((acceleration + local_gravity) * dt) + velocity;
 
       aabb new_bbox = bounding_box();

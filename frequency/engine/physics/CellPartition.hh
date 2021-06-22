@@ -1,10 +1,10 @@
 #pragma once
 
+#include <vector>
+
 #include "engine/math/AABB.hh"
 #include "engine/math/Vector.hh"
 #include "engine/physics/SpatialPartition.hh"
-
-#include <vector>
 
 class ColliderComponent;
 
