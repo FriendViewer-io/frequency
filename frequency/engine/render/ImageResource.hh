@@ -6,9 +6,10 @@
 
 class ImageResource : public Resource {
 public:
-   ImageResource(std::string_view path);
+   ImageResource();
 
-   bool loaded() const;
+   void load_image(std::string_view path);
+   virtual bool loaded() const;
    int width() const;
    int height() const;
    uint8_t const* data() const;
@@ -16,7 +17,7 @@ public:
 
    virtual ~ImageResource();
 
-private:
+protected:
    uint32_t il_image_handle;
    uint32_t gl_image_handle;
    bool file_loaded;

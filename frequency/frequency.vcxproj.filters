@@ -81,6 +81,15 @@
     <ClCompile Include="engine\render\ImageComponent.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\render\Camera.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\AnimationComponent.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\render\SpritesheetResource.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format">
@@ -167,6 +176,15 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\render\ImageComponent.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\Camera.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\AnimationComponent.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\render\SpritesheetResource.hh">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

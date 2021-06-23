@@ -7,7 +7,7 @@
 #include <SDL_opengl.h>
 // clang-format on
 
-void RenderComponent::bind_data() const {
+void RenderComponent::bind_data(Camera const* camera) const {
    if (shader) {
       shader->use_program();
    }

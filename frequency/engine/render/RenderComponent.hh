@@ -7,6 +7,7 @@
 
 class RenderMeshResource;
 class ShaderResource;
+class Camera;
 
 class RenderComponent : public Component {
 public:
@@ -20,8 +21,9 @@ public:
 
    std::string_view get_component_type_name() const final { return "RenderComponent"; }
 
-   virtual void bind_data() const;
+   virtual void bind_data(Camera const* camera) const;
    int get_draw_count() const;
+   virtual aabb const& get_render_bounds() const = 0;
 
    virtual ~RenderComponent() {}
 

@@ -1,15 +1,15 @@
-#include "engine/render/ImageComponent.hh"
+#include "engine/render/AnimationComponent.hh"
 
 #include "engine/core/GObject.hh"
 #include "engine/core/ResourceManager.hh"
 #include "engine/core/StateManager.hh"
-#include "engine/render/Camera.hh"
 #include "engine/render/ImageResource.hh"
 #include "engine/render/RenderExtension.hh"
 #include "engine/render/RenderMeshResource.hh"
 #include "engine/render/ShaderResource.hh"
+#include "engine/render/Camera.hh"
 
-void ImageComponent::on_post_tick(float dt) const {
+void AnimationComponent::on_post_tick(float dt) const {
    vec2 half_dims = vec2(get_scaled_width(), get_scaled_height()) * 0.5f;
    vec2 real_center = get_parent()->get_position() + center_offset;
 
@@ -18,7 +18,7 @@ void ImageComponent::on_post_tick(float dt) const {
    // does NOT deal with rotation
 }
 
-void ImageComponent::load_data(std::string_view image_source) {
+void AnimationComponent::load_data(std::string_view sprite_data_source) {
    auto tmp = ResourceManager::lookup_resource<RenderMeshResource>("??IMC_square");
    if (!tmp) {
       auto res = std::make_unique<RenderMeshResource>();
@@ -45,15 +45,13 @@ void ImageComponent::load_data(std::string_view image_source) {
    }
 
    shader =
-       ResourceManager::load_file<ShaderResource>("shaders/image", load_shader_from_file).value();
-   tex_data = ResourceManager::load_file<ImageResource>(image_source, [](std::string_view path) {
-                 auto image_res = std::make_unique<ImageResource>();
-                 image_res->load_image(path);
-                 return std::move(image_res);
-              }).value();
+       ResourceManager::load_file<ShaderResource>("shaders/spritesheet", load_shader_from_file).value();
+   // tex_data = ResourceManager::load_file<ImageResource>(image_source, [](std::string_view path) {
+   //               return std::make_unique<ImageResource>(path);
+   //            }).value();
 }
 
-void ImageComponent::bind_data(Camera const* camera) const {
+void AnimationComponent::bind_data(Camera const* camera) const {
    RenderComponent::bind_data(camera);
 
    tex_data->bind_image();
@@ -69,16 +67,16 @@ void ImageComponent::bind_data(Camera const* camera) const {
    shader->set_uniform_i("image_tex", 0);
 }
 
-float ImageComponent::get_base_width() const { return static_cast<float>(tex_data->width()); }
+float AnimationComponent::get_base_width() const { return static_cast<float>(tex_data->width()); }
 
-float ImageComponent::get_base_height() const { return static_cast<float>(tex_data->height()); }
+float AnimationComponent::get_base_height() const { return static_cast<float>(tex_data->height()); }
 
-float ImageComponent::get_scaled_width() const {
+float AnimationComponent::get_scaled_width() const {
    return get_base_width() * get_parent()->get_scale().x;
 }
 
-float ImageComponent::get_scaled_height() const {
+float AnimationComponent::get_scaled_height() const {
    return get_base_height() * get_parent()->get_scale().y;
 }
 
-ImageComponent::~ImageComponent() {}
+AnimationComponent::~AnimationComponent() {}

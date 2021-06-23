@@ -5,7 +5,9 @@
 #include <gl/glew.h>
 // clang-format on
 
-ImageResource::ImageResource(std::string_view path) : file_loaded(false) {
+ImageResource::ImageResource() : il_image_handle(0), gl_image_handle(0), file_loaded(false) {}
+
+void ImageResource::load_image(std::string_view path) {
    if (!il_initialized) {
       il_initialized = true;
       ilInit();

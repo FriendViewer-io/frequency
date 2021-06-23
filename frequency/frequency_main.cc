@@ -29,15 +29,65 @@
 #include "engine/render/RenderExtension.hh"
 #include "engine/render/RenderMeshResource.hh"
 #include "engine/render/ShaderResource.hh"
+#include "engine/render/Camera.hh"
+#include "engine/render/SpritesheetResource.hh"
+
+#include <Windows.h>
+
+class Move : public Component {
+public:
+   void on_tick(float dt) override {
+      vec2 move;
+      if (GetAsyncKeyState(VK_RIGHT)) {
+         move.x += 10;
+      }
+      if (GetAsyncKeyState(VK_LEFT)) {
+         move.x -= 10;
+      }
+      if (GetAsyncKeyState(VK_UP)) {
+         move.y += 10;
+      }
+      ColliderComponent* cc = static_cast<ColliderComponent*>(get_parent()->get_staging_component("ColliderComponent"));
+      cc->set_velocity(cc->get_velocity() + move);
+   }
+
+   void on_post_tick(float dt) const override {}
+   void on_message(GObject* sender, std::string const& msg) override {}
+   std::string_view get_component_type_name() const override { return "MoveRight"; }
+   uint32_t get_component_flags() const override { return NO_CLONE_FLAG; }
+
+private:
+};
 
 int main() {
    statemgr::core_game_loop(1.f / 60.f, [] {
-      GObject* sq1 = new GObject;
-      sq1->init(vec2(1000, 500), 0, vec2(1, 1), "sq1", false, false);
-      auto image_comp = sq1->create_component<ImageComponent>();
-      image_comp->load_data("test/images/patchy.png");
-      image_comp->set_anchor(
-          vec2(image_comp->get_scaled_width() / -2, image_comp->get_scaled_height() / 2));
-      statemgr::get_object_list()->add_object(sq1);
+      SpritesheetResource spritesheet;
+      spritesheet.load_sheet("test/images/testsheet.ss");
+      int a = 0;
+      // GObject* sq1 = new GObject;
+      // sq1->init(vec2(0, 300), 0, vec2(0.3, 0.2), "sq1", false, false);
+      // auto image_comp1 = sq1->create_component<ImageComponent>();
+      // image_comp1->load_data("test/images/patchy.png");
+      // vec2 image_dims = vec2(image_comp1->get_scaled_width(), image_comp1->get_scaled_height());
+      // auto coll_comp1 = sq1->create_component<AABoxCollider>(image_dims * 0.5f, false);
+      // coll_comp1->set_gravity_scalar(1);
+
+      // GObject* sq2 = new GObject;
+      // sq2->init(vec2(0, 0), 0, vec2(10, 0.2), "sq2", false, false);
+      // auto image_comp2 = sq2->create_component<ImageComponent>();
+      // image_comp2->load_data("test/images/patchy.png");
+      // image_dims = vec2(image_comp2->get_scaled_width(), image_comp2->get_scaled_height());
+      // sq2->create_component<AABoxCollider>(image_dims * 0.5f, true);
+
+      // sq1->create_component<Move>();
+      
+
+      // statemgr::get_render_extension()->get_camera()->track_object(sq1);
+
+
+
+      
+      // statemgr::get_object_list()->add_object(sq1);
+      // statemgr::get_object_list()->add_object(sq2);
    });
 }
