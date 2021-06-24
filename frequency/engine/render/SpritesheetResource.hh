@@ -29,7 +29,8 @@ public:
    SpritesheetResource();
 
    void load_sheet(std::string_view sheet_path);
-   AnimData const& get_animation(std::string_view name);
+   AnimData const* get_animation(std::string_view name) const;
+   bool loaded() const override;
 
 protected:
    std::map<std::string, AnimData, std::less<>> animations;

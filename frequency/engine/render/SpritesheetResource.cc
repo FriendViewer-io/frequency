@@ -93,4 +93,18 @@ void SpritesheetResource::load_sheet(std::string_view sheet_path) {
          }
       }
    }
+   // validate data here maybe?
+   sheet_loaded = true;
+}
+
+AnimData const* SpritesheetResource::get_animation(std::string_view name) const {
+   auto it = animations.find(name);
+   if (it == animations.end()) {
+      return nullptr;
+   }
+   return &it->second;
+}
+
+bool SpritesheetResource::loaded() const {
+   return ImageResource::loaded() && sheet_loaded;
 }

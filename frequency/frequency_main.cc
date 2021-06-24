@@ -31,6 +31,7 @@
 #include "engine/render/ShaderResource.hh"
 #include "engine/render/Camera.hh"
 #include "engine/render/SpritesheetResource.hh"
+#include "engine/render/AnimationComponent.hh"
 
 #include <Windows.h>
 
@@ -61,13 +62,15 @@ private:
 
 int main() {
    statemgr::core_game_loop(1.f / 60.f, [] {
-      SpritesheetResource spritesheet;
-      spritesheet.load_sheet("test/images/testsheet.ss");
-      int a = 0;
-      // GObject* sq1 = new GObject;
-      // sq1->init(vec2(0, 300), 0, vec2(0.3, 0.2), "sq1", false, false);
-      // auto image_comp1 = sq1->create_component<ImageComponent>();
-      // image_comp1->load_data("test/images/patchy.png");
+      GObject* sq1 = new GObject;
+      sq1->init(vec2(0, 0), 0, vec2(1, 1), "sq1", false, false);
+      // auto anim_comp1 = sq1->create_component<AnimationComponent>();
+      // anim_comp1->load_data("test/images/testsheet.ss");
+
+
+      auto anim_comp1 = sq1->create_component<ImageComponent>();
+      anim_comp1->load_data("test/images/may.png");
+
       // vec2 image_dims = vec2(image_comp1->get_scaled_width(), image_comp1->get_scaled_height());
       // auto coll_comp1 = sq1->create_component<AABoxCollider>(image_dims * 0.5f, false);
       // coll_comp1->set_gravity_scalar(1);
@@ -87,7 +90,7 @@ int main() {
 
 
       
-      // statemgr::get_object_list()->add_object(sq1);
+      statemgr::get_object_list()->add_object(sq1);
       // statemgr::get_object_list()->add_object(sq2);
    });
 }
