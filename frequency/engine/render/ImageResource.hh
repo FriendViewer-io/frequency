@@ -9,7 +9,7 @@ public:
    ImageResource();
 
    void load_image(std::string_view path);
-   virtual bool loaded() const;
+   bool loaded() const;
    int width() const;
    int height() const;
    uint8_t const* data() const;

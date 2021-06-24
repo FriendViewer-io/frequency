@@ -29,6 +29,8 @@ void AnimationComponent::on_tick(float dt) {
 void AnimationComponent::set_animation(std::string_view name) {
    if (sheet_data) {
       cur_animation = sheet_data->get_animation(name);
+      cur_frame = 0;
+      ticks_on_frame = 0;
    }
 }
 
@@ -96,8 +98,8 @@ void AnimationComponent::bind_data(Camera const* camera) const {
       shader->set_uniform("sprite_clip_max", vec2());
    } else {
       aabb const& clip = cur_animation->sprite_clips[cur_animation->frames[cur_frame].sprite_clip_index];
-      shader->set_uniform("sprite_clip_min", clip.min);
-      shader->set_uniform("sprite_clip_max", clip.max);
+      shader->set_uniform("sprite_clip_min", clip.min * get_parent()->get_scale());
+      shader->set_uniform("sprite_clip_max", clip.max * get_parent()->get_scale());
    }
    shader->set_uniform("position", camera->get_adjusted_center(get_parent()) + center_offset);
    shader->set_uniform("anchor_offset", anchor_offset);

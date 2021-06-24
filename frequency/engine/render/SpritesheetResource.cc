@@ -104,7 +104,3 @@ AnimData const* SpritesheetResource::get_animation(std::string_view name) const 
    }
    return &it->second;
 }
-
-bool SpritesheetResource::loaded() const {
-   return ImageResource::loaded() && sheet_loaded;
-}

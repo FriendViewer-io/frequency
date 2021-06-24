@@ -61,7 +61,7 @@ void RenderExtension::pre_tick(float dt) {
       window_resize(evt.window.data1, evt.window.data2);
       camera->dimensions_changed(vec2(evt.window.data1, evt.window.data2));
    }
-   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT);
 }
 

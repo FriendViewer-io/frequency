@@ -10,8 +10,8 @@ layout (location = 1) in vec2 v_tex_coord;
 
 out vec2 sprite_tex_coord;
 
-// specified in pixels
 uniform vec2 window_dims;
+// specified in pixels * scale
 uniform vec2 sheet_dims;
 uniform vec2 sprite_clip_min;
 uniform vec2 sprite_clip_max;
@@ -39,9 +39,7 @@ void main() {
    gl_Position = vec4(normalized_position + normalized_pixel_offset + normalized_anchor_offset, 0.0, 1.0);
 
    vec2 norm_min = (sprite_clip_min / sheet_dims);
-   norm_min = vec2(norm_min.x, 1 - norm_min.y);
-   vec2 norm_dims = sprite_dims / sheet_dims;
-   vec2 bottom_left = norm_min - vec2(0, norm_dims.y);
+   vec2 norm_dims = (sprite_clip_max - sprite_clip_min) / sheet_dims;
 
-   tex_coord = bottom_left + v_tex_coord * norm_dims;
+   sprite_tex_coord = norm_min + v_tex_coord * norm_dims;
 }

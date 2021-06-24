@@ -22,6 +22,7 @@ public:
    void set_offset(vec2 const& offset) { center_offset = offset; }
 
    aabb const& get_render_bounds() const override { return render_bounds; }
+   AnimData const* get_cur_animation() const { return cur_animation; }
 
    virtual ~AnimationComponent();
 
