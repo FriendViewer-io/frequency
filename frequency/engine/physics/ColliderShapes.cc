@@ -8,9 +8,7 @@ void CircleCollider::commit(Component const& from) {
    radius = rhs.radius;
 }
 
-vec2 CircleCollider::support(vec2 d) const {
-   return parent_data->position + (d.normalized() * radius);
-}
+vec2 CircleCollider::support(vec2 d) const { return position() + (d.normalized() * radius); }
 
 void CircleCollider::update_bounds() {
    // set precomputed_bounds min, max
@@ -32,7 +30,7 @@ vec2 ConvexPolyCollider::support(vec2 d) const {
       }
    }
 
-   return parent_data->position + max_point;
+   return position() + max_point;
 }
 
 void ConvexPolyCollider::update_centroid() {

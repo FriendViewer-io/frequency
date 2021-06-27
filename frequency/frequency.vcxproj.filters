@@ -187,5 +187,8 @@
     <ClInclude Include="engine\render\SpritesheetResource.hh">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="engine\core\ComponentGen.hh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

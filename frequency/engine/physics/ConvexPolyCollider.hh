@@ -1,8 +1,10 @@
 #pragma once
 
+#include "engine/core/ComponentGen.hh"
 #include "engine/physics/ColliderComponent.hh"
 
 class ConvexPolyCollider : public ColliderComponent {
+   DEFINE_COMPONENT_INLINE_NODEP(ConvexPolyCollider, ColliderComponent)
 public:
    ConvexPolyCollider(bool is_static) : ColliderComponent(is_static) {}
 

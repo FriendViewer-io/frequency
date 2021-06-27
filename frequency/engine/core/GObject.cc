@@ -2,7 +2,7 @@
 
 GObjectInternal::GObjectInternal() : position(0, 0), rotation(0), scale(1, 1) {}
 
-GObject::GObject() : old_data(), new_data(), ID(0), flags(0) {}
+GObject::GObject() : ID(0), flags(0) {}
 
 GObject::~GObject() {
    enable_messaging();
@@ -11,14 +11,18 @@ GObject::~GObject() {
 
 void GObject::init(vec2 pos, float rot, vec2 scale, std::string const& name, bool disable_messaging,
                    bool active_during_pause) {
-   new_data.position = pos;
-   old_data.position = pos;
+   if (flags & IN_OBJECT_LIST_FLAG) {
+      return;
+   }
 
-   new_data.rotation = rot;
-   old_data.rotation = rot;
+   prs.position = pos;
+   pretick_prs.position = pos;
 
-   new_data.scale = scale;
-   old_data.scale = scale;
+   prs.rotation = rot;
+   pretick_prs.rotation = rot;
+
+   prs.scale = scale;
+   pretick_prs.scale = scale;
 
    this->name = name;
    ID = ID_counter++;
@@ -35,7 +39,7 @@ void GObject::init(vec2 pos, float rot, vec2 scale, std::string const& name, boo
 void GObject::update_final_component_list() {
    if (final_list_invalidated) {
       final_component_list.clear();
-      for (auto& comp : new_component_list) {
+      for (auto& comp : component_list) {
          if (comp->get_component_flags() & Component::EXECUTE_LAST_FLAG) {
             final_component_list.push_back(comp.get());
          }
@@ -51,13 +55,15 @@ void GObject::update_final_component_list() {
 
 void GObject::tick(float dt) {
    update_final_component_list();
-   for (auto& comp : new_component_list) {
+   for (auto& comp : component_list) {
       if (!(comp->get_component_flags() & Component::EXECUTE_LAST_FLAG)) {
          comp->on_tick(dt);
       }
    }
    for (auto& comp : singular_component_list) {
-      comp->on_tick(dt);
+      if (!(comp->get_component_flags() & Component::EXECUTE_LAST_FLAG)) {
+         comp->on_tick(dt);
+      }
    }
    for (auto& comp : final_component_list) {
       comp->on_tick(dt);
@@ -65,21 +71,23 @@ void GObject::tick(float dt) {
 }
 
 void GObject::commit() {
-   old_data = new_data;
-   for (int i = 0; i < new_component_list.size(); i++) {
-      old_component_list[i]->commit(*new_component_list[i]);
+   pretick_prs = prs;
+   for (int i = 0; i < component_list.size(); i++) {
+      pretick_component_list[i]->commit(*component_list[i]);
    }
 }
 
 void GObject::post_tick(float dt) {
    update_final_component_list();
-   for (auto& comp : new_component_list) {
+   for (auto& comp : component_list) {
       if (!(comp->get_component_flags() & Component::EXECUTE_LAST_FLAG)) {
          comp->on_post_tick(dt);
       }
    }
    for (auto& comp : singular_component_list) {
-      comp->on_post_tick(dt);
+      if (!(comp->get_component_flags() & Component::EXECUTE_LAST_FLAG)) {
+         comp->on_post_tick(dt);
+      }
    }
    for (auto& comp : final_component_list) {
       comp->on_post_tick(dt);
@@ -97,13 +105,15 @@ void GObject::on_message(GObject* sender, std::string const& message) {
    }
 
    update_final_component_list();
-   for (auto& comp : new_component_list) {
+   for (auto& comp : component_list) {
       if (!(comp->get_component_flags() & Component::EXECUTE_LAST_FLAG)) {
          comp->on_message(sender, message);
       }
    }
    for (auto& comp : singular_component_list) {
-      comp->on_message(sender, message);
+      if (!(comp->get_component_flags() & Component::EXECUTE_LAST_FLAG)) {
+         comp->on_message(sender, message);
+      }
    }
    for (auto& comp : final_component_list) {
       comp->on_message(sender, message);
@@ -204,45 +214,44 @@ void GObject::send_message(GObject* target, std::string const& state, std::strin
    }
 }
 
-Component const* GObject::get_component(std::string_view type_name) const {
-   for (auto const& comp : old_component_list) {
-      if (comp->get_component_type_name() == type_name) {
-         return comp.get();
-      }
-   }
-   for (auto const& comp : singular_component_list) {
-      if (comp->get_component_type_name() == type_name) {
-         return comp.get();
-      }
-   }
-   return nullptr;
-}
-
-Component const* GObject::get_staging_component(std::string_view type_name) const {
-   for (auto const& comp : new_component_list) {
-      if (comp->get_component_type_name() == type_name) {
-         return comp.get();
-      }
-   }
-   for (auto const& comp : singular_component_list) {
-      if (comp->get_component_type_name() == type_name) {
-         return comp.get();
-      }
-   }
-   return nullptr;
-}
-
-Component* GObject::get_staging_component(std::string_view type_name) {
-   return const_cast<Component*>(
-       static_cast<GObject const*>(this)->get_staging_component(type_name));
-}
-
 bool GObject::messaging_disabled() const { return (flags & MESSAGING_DISABLE_FLAG) != 0; }
 
 bool GObject::active_during_pause() const { return (flags & PAUSE_ACTIVE_FLAG) != 0; }
 
 bool GObject::is_munted() const { return (flags & PENDING_DESTRUCTION_FLAG) != 0; }
 
+bool GObject::in_object_list() const { return (flags & IN_OBJECT_LIST_FLAG) != 0; }
+
 void GObject::disable_messaging() { flags |= MESSAGING_DISABLE_FLAG; }
 
 void GObject::enable_messaging() { flags &= ~MESSAGING_DISABLE_FLAG; }
+
+bool GObject::added_to_object_list() {
+   std::vector<Component*> deps;
+   std::vector<Component const*> pretick_deps;
+
+   for (auto& comp : component_list) {
+      deps.push_back(comp.get());
+   }
+   for (auto& comp : pretick_component_list) {
+      pretick_deps.push_back(comp.get());
+   }
+   for (auto& comp : singular_component_list) {
+      deps.push_back(comp.get());
+      pretick_deps.push_back(comp.get());
+   }
+
+   for (auto& comp : component_list) {
+      if (!comp->dep_assign(deps, pretick_deps)) {
+         return false;
+      }
+   }
+   for (auto& comp : singular_component_list) {
+      if (!comp->dep_assign(deps, pretick_deps)) {
+         return false;
+      }
+   }
+
+   flags |= IN_OBJECT_LIST_FLAG;
+   return true;
+}

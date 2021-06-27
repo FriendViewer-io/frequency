@@ -15,8 +15,8 @@ void push_noimpulse_solver(collision::ContactManifold& manifold) {
    ColliderComponent* a = manifold.a;
    ColliderComponent* b = manifold.b;
 
-   vec2 centroid_diff = (a->get_parent()->get_position() + a->get_centroid()) -
-                        (b->get_parent()->get_position() + b->get_centroid());
+   vec2 centroid_diff = (a->position() + a->get_centroid()) -
+                        (b->position() + b->get_centroid());
 
    if (centroid_diff.dot(manifold.normal) < 0.f) {
       manifold.normal = -manifold.normal;

@@ -5,7 +5,7 @@
 #include "engine/core/Extension.hh"
 #include "engine/math/AABB.hh"
 
-class GObject;
+class ColliderComponent;
 class SpatialPartition;
 
 class PhysicsExtension : public Extension {
@@ -16,7 +16,7 @@ public:
    void pre_tick(float dt) override;
    // Detect [& solve collisions]
    void pre_post_tick(float dt) override;
-   void tick_end(float dt) override { collider_objects.clear(); }
+   void tick_end(float dt) override { colliders.clear(); }
    void extension_reset() override {}
    vec2 const& get_gravity() const { return gravity; }
    void set_gravity(vec2 const& gravity) { this->gravity = gravity; }
@@ -27,7 +27,7 @@ public:
    SpatialPartition& get_static_partition() { return *quadtree; }
 
 private:
-   std::vector<GObject*> collider_objects;
+   std::vector<ColliderComponent*> colliders;
    SpatialPartition* quadtree;
    SpatialPartition* cell_partition;
    vec2 gravity;

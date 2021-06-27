@@ -5,7 +5,7 @@
 
 static aabb get_centered_bounds(ColliderComponent* cc) {
    aabb bbox = cc->bounding_box();
-   bbox.shift(cc->get_parent()->get_staging_position());
+   bbox.shift(cc->position());
    return bbox;
 }
 

@@ -137,6 +137,7 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\core\Component.hh" />
+    <ClInclude Include="engine\core\ComponentGen.hh" />
     <ClInclude Include="engine\core\EngineResource.hh" />
     <ClInclude Include="engine\core\Extension.hh" />
     <ClInclude Include="engine\core\GObject.hh" />

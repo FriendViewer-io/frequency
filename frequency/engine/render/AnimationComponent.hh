@@ -2,6 +2,7 @@
 
 #include <string_view>
 
+#include "engine/core/ComponentGen.hh"
 #include "engine/core/Token.hh"
 #include "engine/render/RenderComponent.hh"
 
@@ -9,6 +10,8 @@ class SpritesheetResource;
 struct AnimData;
 
 class AnimationComponent : public RenderComponent {
+   DEFINE_COMPONENT_INLINE_NODEP(AnimationComponent, RenderComponent)
+
 public:
    AnimationComponent();
 

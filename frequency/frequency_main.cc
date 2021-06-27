@@ -32,55 +32,61 @@
 #include "engine/render/Camera.hh"
 #include "engine/render/SpritesheetResource.hh"
 #include "engine/render/AnimationComponent.hh"
+#include "engine/core/ComponentGen.hh"
 
 #include <Windows.h>
 
 class Move : public Component {
+   DEFINE_COMPONENT_CLASS_CHUNK(Move, Component, AnimationComponent, ColliderComponent)
+
 public:
-   void on_tick(float dt) override {
-      AnimationComponent* ac = static_cast<AnimationComponent*>(get_parent()->get_staging_component("RenderComponent"));
-      auto cur_anim = ac->get_cur_animation();
-      vec2 move;
-      if (GetAsyncKeyState(VK_RIGHT)) {
-         if (cur_anim->anim_name != "walkright") {
-            last_anim = cur_anim;
-            ac->set_animation("walkright");
-         }
-         move.x += 300;
-      }
-      if (GetAsyncKeyState(VK_LEFT)) {
-         if (cur_anim->anim_name != "walkleft") {
-            last_anim = cur_anim;
-            ac->set_animation("walkleft");
-         }
-         move.x -= 300;
-      }
-      if (GetAsyncKeyState(VK_UP)) {
-         if (cur_anim->anim_name != "walkup") {
-            last_anim = cur_anim;
-            ac->set_animation("walkup");
-         }
-         move.y += 300;
-      }
-      if (GetAsyncKeyState(VK_DOWN)) {
-         if (cur_anim->anim_name != "walkdown") {
-            last_anim = cur_anim;
-            ac->set_animation("walkdown");
-         }
-         move.y -= 300;
-      }
-      
-      parent_data->position += move * dt;
-   }
+   void on_tick(float dt) override;
 
    void on_post_tick(float dt) const override {}
    void on_message(GObject* sender, std::string const& msg) override {}
-   std::string_view get_component_type_name() const override { return "Move"; }
    uint32_t get_component_flags() const override { return NO_CLONE_FLAG; }
 
 private:
    AnimData const* last_anim = nullptr;
 };
+
+DEFINE_COMPONENT_GLOBAL_CHUNK(Move)
+
+void Move::on_tick(float dt) {
+   AnimationComponent* ac = get<AnimationComponent>(this);
+   auto cur_anim = ac->get_cur_animation();
+   vec2 move;
+   if (GetAsyncKeyState(VK_RIGHT)) {
+      if (cur_anim->anim_name != "walkright") {
+         last_anim = cur_anim;
+         ac->set_animation("walkright");
+      }
+      move.x += 300;
+   }
+   if (GetAsyncKeyState(VK_LEFT)) {
+      if (cur_anim->anim_name != "walkleft") {
+         last_anim = cur_anim;
+         ac->set_animation("walkleft");
+      }
+      move.x -= 300;
+   }
+   if (GetAsyncKeyState(VK_UP)) {
+      if (cur_anim->anim_name != "walkup") {
+         last_anim = cur_anim;
+         ac->set_animation("walkup");
+      }
+      move.y += 300;
+   }
+   if (GetAsyncKeyState(VK_DOWN)) {
+      if (cur_anim->anim_name != "walkdown") {
+         last_anim = cur_anim;
+         ac->set_animation("walkdown");
+      }
+      move.y -= 300;
+   }
+   
+   parent_data->position += move * dt;
+}
 
 int main() {
    statemgr::core_game_loop(1.f / 60.f, [] {
@@ -94,6 +100,8 @@ int main() {
       anim_comp1->load_data("test/images/testsheet.ss");
       anim_comp1->set_animation("walkdown");
       sq1->create_component<Move>();
+
+      auto coll_comp1 = sq1->create_component<CircleCollider>(false, 50.f);
 
       // vec2 image_dims = vec2(image_comp1->get_scaled_width(), image_comp1->get_scaled_height());
       // auto coll_comp1 = sq1->create_component<AABoxCollider>(image_dims * 0.5f, false);

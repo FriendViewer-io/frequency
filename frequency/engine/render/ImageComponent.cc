@@ -11,7 +11,7 @@
 
 void ImageComponent::on_post_tick(float dt) const {
    vec2 half_dims = vec2(get_scaled_width(), get_scaled_height()) * 0.5f;
-   vec2 real_center = get_parent()->get_position() + center_offset;
+   vec2 real_center = position() + center_offset;
 
    render_bounds = aabb(real_center - half_dims, real_center + half_dims);
 
@@ -61,11 +61,11 @@ void ImageComponent::bind_data(Camera const* camera) const {
          win_h = static_cast<float>(statemgr::get_render_extension()->window_height());
    shader->set_uniform("window_dims", vec2(win_w, win_h));
    shader->set_uniform("image_dims",
-                       vec2(tex_data->width(), tex_data->height()) * get_parent()->get_scale());
+                       vec2(tex_data->width(), tex_data->height()) * scale());
 
    shader->set_uniform("position", camera->get_adjusted_center(get_parent()) + center_offset);
    shader->set_uniform("anchor_offset", anchor_offset);
-   shader->set_uniform("rotation", get_parent()->get_rotation());
+   shader->set_uniform("rotation", rotation());
    shader->set_uniform_i("image_tex", 0);
 }
 
@@ -74,11 +74,11 @@ float ImageComponent::get_base_width() const { return static_cast<float>(tex_dat
 float ImageComponent::get_base_height() const { return static_cast<float>(tex_data->height()); }
 
 float ImageComponent::get_scaled_width() const {
-   return get_base_width() * get_parent()->get_scale().x;
+   return get_base_width() * scale().x;
 }
 
 float ImageComponent::get_scaled_height() const {
-   return get_base_height() * get_parent()->get_scale().y;
+   return get_base_height() * scale().y;
 }
 
 ImageComponent::~ImageComponent() {}

@@ -2,9 +2,11 @@
 
 #include <vector>
 
+#include "engine/core/ComponentGen.hh"
 #include "engine/physics/ConvexPolyCollider.hh"
 
 class MeshCollider : public ConvexPolyCollider {
+   DEFINE_COMPONENT_INLINE_NODEP(MeshCollider, ConvexPolyCollider)
 public:
    MeshCollider(std::vector<vec2>&& vertices, bool s)
        : ConvexPolyCollider(s), vertices(std::move(vertices)) {}

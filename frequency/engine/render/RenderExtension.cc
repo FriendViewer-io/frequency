@@ -69,8 +69,7 @@ void RenderExtension::tick_end(float dt) {
    camera->update_tracking();
 
    for (GObject* go : *statemgr::get_object_list()) {
-      RenderComponent const* rc =
-          static_cast<RenderComponent const*>(go->get_component("RenderComponent"));
+      RenderComponent const* rc = go->get_component<RenderComponent>();
       if (rc != nullptr) {
          if (!camera->should_cull(rc)) {
             rc->bind_data(get_camera());

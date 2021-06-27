@@ -16,21 +16,20 @@ void ColliderComponent::on_tick(float dt) {
    if (!_is_static) {
       // remove and reinsert
       aabb old_bbox = bounding_box();
-      old_bbox.shift(get_parent()->get_position());
+      old_bbox.shift(pretick_position());
       statemgr::get_physics_extension()->get_dynamic_partition().remove(old_bbox, this);
       // insert & remove from cell-based partition
-      parent_data->position = ((acceleration + local_gravity) * dt * dt) * 0.5f + (velocity * dt) +
-                              parent_data->position;
+      position() = ((acceleration + local_gravity) * dt * dt) * 0.5f + (velocity * dt) + position();
       velocity = ((acceleration + local_gravity) * dt) + velocity;
 
       aabb new_bbox = bounding_box();
-      new_bbox.shift(parent_data->position);
+      new_bbox.shift(position());
       statemgr::get_physics_extension()->get_dynamic_partition().insert(new_bbox, this);
    } else {
       if (!was_static_inserted) {
          was_static_inserted = true;
          aabb bbox = bounding_box();
-         bbox.shift(parent_data->position);
+         bbox.shift(position());
          statemgr::get_physics_extension()->get_static_partition().insert(bbox, this);
       }
    }
@@ -47,14 +46,14 @@ void ColliderComponent::commit(Component const& from) {
 
 void ColliderComponent::push_object(vec2 direction) {
    aabb bbox = bounding_box();
-   bbox.shift(get_parent()->get_position());
+   bbox.shift(pretick_position());
    if (_is_static) {
       statemgr::get_physics_extension()->get_static_partition().remove(bbox, this);
    } else {
       statemgr::get_physics_extension()->get_dynamic_partition().remove(bbox, this);
    }
 
-   parent_data->position += direction;
+   position() += direction;
 
    if (_is_static) {
       statemgr::get_physics_extension()->get_static_partition().insert(bbox, this);
@@ -65,7 +64,7 @@ void ColliderComponent::push_object(vec2 direction) {
 
 ColliderComponent::~ColliderComponent() {
    aabb bbox = bounding_box();
-   bbox.shift(get_parent()->get_position());
+   bbox.shift(pretick_position());
    if (_is_static) {
       statemgr::get_physics_extension()->get_static_partition().remove(bbox, this);
    } else {

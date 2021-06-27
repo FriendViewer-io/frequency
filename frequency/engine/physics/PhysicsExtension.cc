@@ -19,23 +19,22 @@ void PhysicsExtension::pre_tick(float dt) {
    GOList* object_list = statemgr::get_object_list();
 
    for (GObject* go : *object_list) {
-      if (go->get_component("ColliderComponent")) {
-         collider_objects.push_back(go);
+      ColliderComponent* cc = go->get_component<ColliderComponent>();
+      if (cc != nullptr) {
+         colliders.push_back(cc);
       }
    }
 }
 
 void PhysicsExtension::pre_post_tick(float dt) {
    std::vector<ColliderComponent*> possible_collisions;
-   for (int i = 0; i < collider_objects.size(); i++) {
-      GObject* lhs = collider_objects[i];
-      ColliderComponent* cc1 =
-          static_cast<ColliderComponent*>(lhs->get_staging_component("ColliderComponent"));
+   for (int i = 0; i < colliders.size(); i++) {
+      ColliderComponent* cc1 = colliders[i];
       if (cc1->is_static()) {
          continue;
       }
       aabb cc1_bbox = cc1->bounding_box();
-      cc1_bbox.shift(lhs->get_position());
+      cc1_bbox.shift(cc1->position());
 
       possible_collisions.clear();
       quadtree->query(cc1_bbox, possible_collisions);

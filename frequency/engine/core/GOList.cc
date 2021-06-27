@@ -1,6 +1,12 @@
 #include "engine/core/GOList.hh"
 
-void GOList::add_object(GObject* obj) { object_list.push_back(obj); }
+void GOList::add_object(GObject* obj) {
+   if (obj->added_to_object_list()) {
+      object_list.push_back(obj);
+   } else {
+      // log failure?
+   }
+}
 
 void GOList::remove_object(GObject* obj) {
    for (int i = 0; i < object_list.size(); i++) {

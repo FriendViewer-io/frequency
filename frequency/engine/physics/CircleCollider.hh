@@ -1,8 +1,11 @@
 #pragma once
 
 #include "engine/physics/ColliderComponent.hh"
+#include "engine/core/ComponentGen.hh"
 
 class CircleCollider : public ColliderComponent {
+   DEFINE_COMPONENT_INLINE_NODEP(CircleCollider, ColliderComponent)
+
 public:
    CircleCollider(bool is_static, float r) : ColliderComponent(is_static), radius(r) {}
 

@@ -1,7 +1,10 @@
 #pragma once
+
+#include "engine/core/ComponentGen.hh"
 #include "engine/physics/ConvexPolyCollider.hh"
 
 class AABoxCollider : public ConvexPolyCollider {
+   DEFINE_COMPONENT_INLINE_NODEP(AABoxCollider, ConvexPolyCollider)
 public:
    AABoxCollider(vec2 half_dims, bool s) : ConvexPolyCollider(s), half_dims(half_dims) {}
 

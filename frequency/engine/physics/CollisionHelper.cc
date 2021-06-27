@@ -129,7 +129,7 @@ bool next_simplex_and_dir(Simplex& shape, vec2& dir_out) {
 // Basic GJK implementation
 bool overlap_test_gjk(ColliderComponent* a, ColliderComponent* b, Simplex& simplex) {
    vec2 initial_search =
-       a->get_parent()->get_staging_position() - b->get_parent()->get_staging_position();
+       a->position() - b->position();
 
    if (initial_search == vec2(0.f, 0.f)) {
       initial_search = vec2(1, 0);
@@ -162,8 +162,8 @@ bool overlap_test_gjk(ColliderComponent* a, ColliderComponent* b, Simplex& simpl
 }
 
 bool overlap_test_circle_circle(CircleCollider* a, CircleCollider* b) {
-   vec2 a_center = a->get_parent()->get_position();
-   vec2 b_center = b->get_parent()->get_position();
+   vec2 a_center = a->pretick_position();
+   vec2 b_center = b->pretick_position();
    const float double_rad = a->get_radius() + b->get_radius();
    vec2 ab = b_center - a_center;
    if (ab.mag_sq() < (double_rad * double_rad)) {
@@ -178,8 +178,8 @@ bool overlap_test_circle_convex(CircleCollider* a, ConvexPolyCollider* b,
    vec2 nearest_point;
    vec2 nearest_edge;
 
-   const vec2 a_pos = a->get_parent()->get_position();
-   const vec2 b_pos = b->get_parent()->get_position();
+   const vec2 a_pos = a->pretick_position();
+   const vec2 b_pos = b->pretick_position();
    const float radius = a->get_radius();
 
    for (int i = 0; i < b->get_num_vertices(); i++) {
@@ -262,8 +262,8 @@ bool overlap_test(ColliderComponent* a, ColliderComponent* b, ContactManifold& m
 
 void generate_contacts_circle_circle(CircleCollider* a, CircleCollider* b,
                                      ContactManifold& manifold) {
-   vec2 ca = a->get_parent()->get_position();
-   vec2 cb = b->get_parent()->get_position();
+   vec2 ca = a->pretick_position();
+   vec2 cb = b->pretick_position();
    vec2 resolve_dir = cb - ca;
 
    const float dist = resolve_dir.mag();

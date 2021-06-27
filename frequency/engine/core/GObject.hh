@@ -35,19 +35,23 @@ public:
    T* create_component(Args... cons) {
       static_assert(std::is_base_of_v<Component, T>,
                     "create_component can only construct types derived from Component!");
+
+      if (flags & IN_OBJECT_LIST_FLAG) {
+         return nullptr;
+      }
       auto comp = std::make_unique<T>(cons...);
       T* comp_ret = comp.get();
       comp->set_parent(this);
-      comp->set_reference_data(&new_data);
+      comp->set_reference_data(&prs);
 
       if (comp->get_component_flags() & Component::NO_CLONE_FLAG) {
          singular_component_list.emplace_back(std::move(comp));
       } else {
          auto old_comp = comp->clone();
          old_comp->set_parent(this);
-         old_comp->set_reference_data(&old_data);
-         old_component_list.emplace_back(std::move(old_comp));
-         new_component_list.emplace_back(std::move(comp));
+         old_comp->set_reference_data(&pretick_prs);
+         pretick_component_list.emplace_back(std::move(old_comp));
+         component_list.emplace_back(std::move(comp));
       }
       final_list_invalidated = true;
       return comp_ret;
@@ -64,20 +68,60 @@ public:
    std::string const& get_name() const { return name; }
    int get_id() const { return ID; }
 
-   vec2 const& get_position() const { return old_data.position; }
-   float get_rotation() const { return old_data.rotation; }
-   vec2 const& get_scale() const { return old_data.scale; }
-   Component const* get_component(std::string_view type_name) const;
+   vec2 const& get_position() const { return prs.position; }
+   float get_rotation() const { return prs.rotation; }
+   vec2 const& get_scale() const { return prs.scale; }
+   // Avoid frequent usage, runs a full hierarchy check
+   template <typename T>
+   T const* get_component() const {
+      static_assert(std::is_base_of_v<Component, T>,
+                    "get_component<T>() Expected a value-type class derived from Component.");
+      for (auto const& comp : component_list) {
+         if (comp->hierarchy_check(T::component_typename())) {
+            return static_cast<T const*>(comp.get());
+         }
+      }
+      for (auto const& comp : singular_component_list) {
+         if (comp->hierarchy_check(T::component_typename())) {
+            return static_cast<T const*>(comp.get());
+         }
+      }
+      return nullptr;
+   }
+   // Avoid frequent usage, runs a full hierarchy check
+   template <typename T>
+   T* get_component() {
+      static_assert(std::is_base_of_v<Component, T>,
+                    "get_component<T>() Expected a value-type class derived from Component.");
+      return const_cast<T*>(static_cast<GObject const*>(this)->get_component<T>());
+   }
 
-   vec2 const& get_staging_position() const { return new_data.position; }
-   float get_staging_rotation() const { return new_data.rotation; }
-   vec2 const& get_staging_scale() const { return new_data.scale; }
-   Component const* get_staging_component(std::string_view type_name) const;
-   Component* get_staging_component(std::string_view type_name);
+   vec2 const& get_pretick_position() const { return pretick_prs.position; }
+   float get_pretick_rotation() const { return pretick_prs.rotation; }
+   vec2 const& get_pretick_scale() const { return pretick_prs.scale; }
+   // Avoid frequent usage, runs a full hierarchy check
+   template <typename T>
+   T const* get_pretick_component() const {
+      static_assert(
+          std::is_base_of_v<Component, T>,
+          "get_pretick_component<T>() Expected a value-type class derived from Component.");
+      for (auto const& comp : pretick_component_list) {
+         if (comp->hierarchy_check(T::component_typename())) {
+            return comp.get();
+         }
+      }
+      for (auto const& comp : singular_component_list) {
+         if (comp->hierarchy_check(T::component_typename())) {
+            return comp.get();
+         }
+      }
+      return nullptr;
+   }
 
    bool messaging_disabled() const;
    bool active_during_pause() const;
    bool is_munted() const;
+   bool in_object_list() const;
 
    void disable_messaging();
    void enable_messaging();
@@ -85,17 +129,16 @@ public:
 private:
    void create_destroy_link(GObject* target);
    void update_final_component_list();
+   // setup dependency, run dep check, returns success
+   bool added_to_object_list();
 
-   // External only
-   GObjectInternal old_data;
-   // Internal only, copied to old
-   GObjectInternal new_data;
+   friend class GOList;
 
-   // External only
-   std::vector<std::unique_ptr<Component>> old_component_list;
-   // Internal only, copied to old
-   std::vector<std::unique_ptr<Component>> new_component_list;
-   // Both internal & external
+   GObjectInternal pretick_prs;
+   GObjectInternal prs;
+
+   std::vector<std::unique_ptr<Component>> pretick_component_list;
+   std::vector<std::unique_ptr<Component>> component_list;
    std::vector<std::unique_ptr<Component>> singular_component_list;
    // Reference list for components trying to execute last
    std::vector<Component*> final_component_list;
@@ -106,10 +149,11 @@ private:
    std::map<std::string, std::vector<GObject*>> links;
    std::queue<std::pair<GObject*, std::string>> message_queue;
 
-   static constexpr uint8_t MESSAGING_DISABLE_FLAG = 0x01;
-   static constexpr uint8_t PAUSE_ACTIVE_FLAG = 0x02;
-   static constexpr uint8_t PENDING_DESTRUCTION_FLAG = 0x04;
-   uint8_t flags;
+   static constexpr uint32_t MESSAGING_DISABLE_FLAG = 0x01;
+   static constexpr uint32_t PAUSE_ACTIVE_FLAG = 0x02;
+   static constexpr uint32_t PENDING_DESTRUCTION_FLAG = 0x04;
+   static constexpr uint32_t IN_OBJECT_LIST_FLAG = 0x08;
+   uint32_t flags;
 
    inline static int ID_counter = 0;
 };

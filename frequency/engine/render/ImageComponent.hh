@@ -2,12 +2,15 @@
 
 #include <string_view>
 
+#include "engine/core/ComponentGen.hh"
 #include "engine/core/Token.hh"
 #include "engine/render/RenderComponent.hh"
 
 class ImageResource;
 
 class ImageComponent : public RenderComponent {
+   DEFINE_COMPONENT_INLINE_NODEP(ImageComponent, RenderComponent)
+
 public:
    void on_post_tick(float dt) const override;
 
