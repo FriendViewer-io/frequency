@@ -101,20 +101,20 @@ void AnimationComponent::load_data(std::string_view sprite_data_source) {
                     .value();
 }
 
-void AnimationComponent::bind_data(Camera const* camera) const {   
+void AnimationComponent::bind_data(Camera const* camera) const {
    RenderComponent::bind_data(camera);
 
    sheet_data->bind_image();
    float win_w = static_cast<float>(statemgr::get_render_extension()->window_width()),
          win_h = static_cast<float>(statemgr::get_render_extension()->window_height());
    shader->set_uniform("window_dims", vec2(win_w, win_h));
-   shader->set_uniform("sheet_dims",
-                       vec2(sheet_data->width(), sheet_data->height()) * scale());
+   shader->set_uniform("sheet_dims", vec2(sheet_data->width(), sheet_data->height()) * scale());
    if (cur_animation == nullptr) {
       shader->set_uniform("sprite_clip_min", vec2());
       shader->set_uniform("sprite_clip_max", vec2());
    } else {
-      aabb const& clip = cur_animation->sprite_clips[cur_animation->frames[cur_frame].sprite_clip_index];
+      aabb const& clip =
+          cur_animation->sprite_clips[cur_animation->frames[cur_frame].sprite_clip_index];
       shader->set_uniform("sprite_clip_min", clip.min * scale());
       shader->set_uniform("sprite_clip_max", clip.max * scale());
    }

@@ -122,6 +122,7 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
     <ClCompile Include="engine\physics\Quadtree.cc" />
     <ClCompile Include="engine\physics\Solver.cc" />
     <ClCompile Include="engine\render\AnimationComponent.cc" />
+    <ClCompile Include="engine\render\AnimationController.cc" />
     <ClCompile Include="engine\render\Camera.cc" />
     <ClCompile Include="engine\render\ImageComponent.cc" />
     <ClCompile Include="engine\render\ImageResource.cc" />
@@ -130,6 +131,7 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
     <ClCompile Include="engine\render\RenderMeshResource.cc" />
     <ClCompile Include="engine\render\ShaderResource.cc" />
     <ClCompile Include="engine\render\SpritesheetResource.cc" />
+    <ClCompile Include="engine\render\TransitionRule.cc" />
     <ClCompile Include="frequency_main.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +161,7 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
     <ClInclude Include="engine\physics\Solver.hh" />
     <ClInclude Include="engine\physics\SpatialPartition.hh" />
     <ClInclude Include="engine\render\AnimationComponent.hh" />
+    <ClInclude Include="engine\render\AnimationController.hh" />
     <ClInclude Include="engine\render\Camera.hh" />
     <ClInclude Include="engine\render\ImageComponent.hh" />
     <ClInclude Include="engine\render\ImageResource.hh" />
@@ -167,6 +170,7 @@ copy "$(SolutionDir)dependencies\bin\x64\DevIL.dll" "$(SolutionDir)$(Platform)\$
     <ClInclude Include="engine\render\RenderMeshResource.hh" />
     <ClInclude Include="engine\render\ShaderResource.hh" />
     <ClInclude Include="engine\render\SpritesheetResource.hh" />
+    <ClInclude Include="engine\render\TransitionRule.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

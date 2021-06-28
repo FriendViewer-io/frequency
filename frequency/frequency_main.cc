@@ -33,11 +33,13 @@
 #include "engine/render/SpritesheetResource.hh"
 #include "engine/render/AnimationComponent.hh"
 #include "engine/core/ComponentGen.hh"
+#include "engine/render/TransitionRule.hh"
+#include "engine/render/AnimationController.hh"
 
 #include <Windows.h>
 
 class Move : public Component {
-   DEFINE_COMPONENT_CLASS_CHUNK(Move, Component, AnimationComponent)
+   DEFINE_COMPONENT_CLASS_CHUNK(Move, Component, AnimationComponent, ColliderComponent)
 
 public:
    void on_tick(float dt) override;
@@ -54,42 +56,55 @@ DEFINE_COMPONENT_GLOBAL_CHUNK(Move)
 
 void Move::on_tick(float dt) {
    AnimationComponent* ac = get<AnimationComponent>(this);
+   ColliderComponent* cc = get<ColliderComponent>(this);
+
+   float friction = 1.f;
    auto cur_anim = ac->get_cur_animation();
    vec2 move;
    if (GetAsyncKeyState(VK_RIGHT)) {
-      if (cur_anim->anim_name != "walkright") {
-         last_anim = cur_anim;
-         ac->set_animation("walkright");
-      }
-      move.x += 300;
+      move.x += 2000;
+      friction = 0;
    }
    if (GetAsyncKeyState(VK_LEFT)) {
-      if (cur_anim->anim_name != "walkleft") {
-         last_anim = cur_anim;
-         ac->set_animation("walkleft");
-      }
-      move.x -= 300;
+      move.x -= 2000;
+      friction = 0;
    }
    if (GetAsyncKeyState(VK_UP)) {
-      if (cur_anim->anim_name != "walkup") {
-         last_anim = cur_anim;
-         ac->set_animation("walkup");
-      }
-      move.y += 300;
+      move.y += 2000;
+      friction = 0;
    }
    if (GetAsyncKeyState(VK_DOWN)) {
-      if (cur_anim->anim_name != "walkdown") {
-         last_anim = cur_anim;
-         ac->set_animation("walkdown");
-      }
-      move.y -= 300;
+      move.y -= 2000;
+      friction = 0;
    }
-   
-   position() += move * dt;
-   if (GetAsyncKeyState(VK_RCONTROL)) {
-        rotation() += 0.001f;
+
+   vec2 vel = cc->get_velocity() + move * dt;
+   vel -= vel * friction;
+   if (vel.mag_sq() > 300.f * 300.f) {
+      cc->set_velocity(vel.normalized() * 300.f);
+   } else {
+      cc->set_velocity(vel);
    }
 }
+
+struct KeypressTransition : public TransitionRule {
+   KeypressTransition(int target_idx, int vk) : TransitionRule(target_idx), vk(vk) {}
+   bool passes() override {
+      return GetAsyncKeyState(vk) ? true : false;
+   }
+
+   const int vk;
+};
+
+struct KeyreleaseTransition : public TransitionRule {
+   KeyreleaseTransition(int target_idx, int vk) : TransitionRule(target_idx), vk(vk) {}
+   bool passes() override {
+      return GetAsyncKeyState(vk) ? false : true;
+   }
+
+   const int vk;
+};
+
 
 int main() {
    statemgr::core_game_loop(1.f / 60.f, [] {
@@ -101,10 +116,23 @@ int main() {
 
       auto anim_comp1 = sq1->create_component<AnimationComponent>();
       anim_comp1->load_data("test/images/testsheet.ss");
-      anim_comp1->set_animation("walkdown");
       sq1->create_component<Move>();
+      
+      auto anim_controller_comp1 = sq1->create_component<AnimationController>();
+      int wl_state = anim_controller_comp1->add_state("walkleft");
+      int wr_state = anim_controller_comp1->add_state("walkright");
+      int sl_state = anim_controller_comp1->add_state("standleft");
+      int sr_state = anim_controller_comp1->add_state("standright");
+      anim_controller_comp1->add_rule(wl_state, std::make_unique<KeyreleaseTransition>(sl_state, VK_LEFT));
+      anim_controller_comp1->add_rule(wr_state, std::make_unique<KeyreleaseTransition>(sr_state, VK_RIGHT));
+      anim_controller_comp1->add_rule(sl_state, std::make_unique<KeypressTransition>(wl_state, VK_LEFT));
+      anim_controller_comp1->add_rule(sr_state, std::make_unique<KeypressTransition>(wr_state, VK_RIGHT));
 
-      //auto coll_comp1 = sq1->create_component<CircleCollider>(false, 50.f);
+      anim_controller_comp1->add_rule(sl_state, std::make_unique<KeypressTransition>(wr_state, VK_RIGHT));
+      anim_controller_comp1->add_rule(sr_state, std::make_unique<KeypressTransition>(wl_state, VK_LEFT));
+      
+      auto coll_comp1 = sq1->create_component<CircleCollider>(false, 50.f);
+      coll_comp1->set_gravity_scalar(0.0f);
 
       // vec2 image_dims = vec2(image_comp1->get_scaled_width(), image_comp1->get_scaled_height());
       // auto coll_comp1 = sq1->create_component<AABoxCollider>(image_dims * 0.5f, false);

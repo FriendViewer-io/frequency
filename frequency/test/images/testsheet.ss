@@ -24,7 +24,7 @@
 <Frame> 0, 8
 
 <Anim> standup
-<Clip> (126,6)(140,26)
+<Clip> (127,6)(141,28)
 <Frame> 0, 0
 <Anim> walkup
 <Clip> (127,6)(141,28)
@@ -36,7 +36,7 @@
 <Frame> 0, 8
 
 <Anim> standright
-<Clip> (186,6)(200,26)
+<Clip> (187,6)(201,28)
 <Frame> 0, 0
 <Anim> walkright
 <Clip> (187,6)(201,28)

@@ -200,6 +200,11 @@ void GObject::send_message(GObject* target, std::string const& state, std::strin
       return;
    }
 
+   if (target == this) {
+      enqueue_message(this, message);
+      return;
+   }
+
    auto send_links = links.find(state);
 
    if (send_links == links.end()) {
