@@ -37,7 +37,7 @@
 #include <Windows.h>
 
 class Move : public Component {
-   DEFINE_COMPONENT_CLASS_CHUNK(Move, Component, AnimationComponent, ColliderComponent)
+   DEFINE_COMPONENT_CLASS_CHUNK(Move, Component, AnimationComponent)
 
 public:
    void on_tick(float dt) override;
@@ -85,7 +85,10 @@ void Move::on_tick(float dt) {
       move.y -= 300;
    }
    
-   parent_data->position += move * dt;
+   position() += move * dt;
+   if (GetAsyncKeyState(VK_RCONTROL)) {
+        rotation() += 0.001f;
+   }
 }
 
 int main() {
@@ -101,7 +104,7 @@ int main() {
       anim_comp1->set_animation("walkdown");
       sq1->create_component<Move>();
 
-      auto coll_comp1 = sq1->create_component<CircleCollider>(false, 50.f);
+      //auto coll_comp1 = sq1->create_component<CircleCollider>(false, 50.f);
 
       // vec2 image_dims = vec2(image_comp1->get_scaled_width(), image_comp1->get_scaled_height());
       // auto coll_comp1 = sq1->create_component<AABoxCollider>(image_dims * 0.5f, false);

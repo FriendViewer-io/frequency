@@ -1,5 +1,7 @@
 #include "engine/render/AnimationComponent.hh"
 
+#include <array>
+
 #include "engine/core/GObject.hh"
 #include "engine/core/ResourceManager.hh"
 #include "engine/core/StateManager.hh"
@@ -37,13 +39,28 @@ void AnimationComponent::set_animation(std::string_view name) {
 void AnimationComponent::on_post_tick(float dt) const {
    if (cur_animation != nullptr) {
       vec2 half_dims = cur_animation->max_dims * 0.5f * scale();
-      vec2 real_center = position() + center_offset;
-      render_bounds = aabb(real_center - half_dims, real_center + half_dims);
+      std::array<vec2, 4> corners;
+      corners[0] = -half_dims;
+      corners[1] = vec2(-half_dims.x, half_dims.y);
+      corners[2] = half_dims;
+      corners[3] = vec2(half_dims.x, -half_dims.y);
+      for (vec2& v : corners) {
+         v.rotate_about(anchor_offset, rotation());
+      }
+      aabb accum_bounds(vec2(FLT_MAX, FLT_MAX), vec2(FLT_MIN, FLT_MIN));
+      for (vec2& v : corners) {
+         accum_bounds.min.x = std::min(accum_bounds.min.x, v.x);
+         accum_bounds.min.y = std::min(accum_bounds.min.y, v.y);
+         accum_bounds.max.x = std::max(accum_bounds.max.x, v.x);
+         accum_bounds.max.y = std::max(accum_bounds.max.y, v.y);
+      }
+
+      accum_bounds.shift(position() + center_offset);
+
+      render_bounds = accum_bounds;
    } else {
       render_bounds = aabb(vec2(FLT_MAX, FLT_MAX), vec2(FLT_MAX, FLT_MAX));
    }
-
-   // does NOT deal with rotation
 }
 
 void AnimationComponent::load_data(std::string_view sprite_data_source) {

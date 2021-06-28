@@ -1,5 +1,7 @@
 #include "engine/render/ImageComponent.hh"
 
+#include <array>
+
 #include "engine/core/GObject.hh"
 #include "engine/core/ResourceManager.hh"
 #include "engine/core/StateManager.hh"
@@ -11,11 +13,25 @@
 
 void ImageComponent::on_post_tick(float dt) const {
    vec2 half_dims = vec2(get_scaled_width(), get_scaled_height()) * 0.5f;
-   vec2 real_center = position() + center_offset;
+   std::array<vec2, 4> corners;
+   corners[0] = -half_dims;
+   corners[1] = vec2(-half_dims.x, half_dims.y);
+   corners[2] = half_dims;
+   corners[3] = vec2(half_dims.x, -half_dims.y);
+   for (vec2& v : corners) {
+      v.rotate_about(anchor_offset, rotation());
+   }
+   aabb accum_bounds(vec2(FLT_MAX, FLT_MAX), vec2(FLT_MIN, FLT_MIN));
+   for (vec2& v : corners) {
+      accum_bounds.min.x = std::min(accum_bounds.min.x, v.x);
+      accum_bounds.min.y = std::min(accum_bounds.min.y, v.y);
+      accum_bounds.max.x = std::max(accum_bounds.max.x, v.x);
+      accum_bounds.max.y = std::max(accum_bounds.max.y, v.y);
+   }
 
-   render_bounds = aabb(real_center - half_dims, real_center + half_dims);
+   accum_bounds.shift(position() + center_offset);
 
-   // does NOT deal with rotation
+   render_bounds = accum_bounds;
 }
 
 void ImageComponent::load_data(std::string_view image_source) {
@@ -60,8 +76,7 @@ void ImageComponent::bind_data(Camera const* camera) const {
    float win_w = static_cast<float>(statemgr::get_render_extension()->window_width()),
          win_h = static_cast<float>(statemgr::get_render_extension()->window_height());
    shader->set_uniform("window_dims", vec2(win_w, win_h));
-   shader->set_uniform("image_dims",
-                       vec2(tex_data->width(), tex_data->height()) * scale());
+   shader->set_uniform("image_dims", vec2(tex_data->width(), tex_data->height()) * scale());
 
    shader->set_uniform("position", camera->get_adjusted_center(get_parent()) + center_offset);
    shader->set_uniform("anchor_offset", anchor_offset);
@@ -73,12 +88,8 @@ float ImageComponent::get_base_width() const { return static_cast<float>(tex_dat
 
 float ImageComponent::get_base_height() const { return static_cast<float>(tex_data->height()); }
 
-float ImageComponent::get_scaled_width() const {
-   return get_base_width() * scale().x;
-}
+float ImageComponent::get_scaled_width() const { return get_base_width() * scale().x; }
 
-float ImageComponent::get_scaled_height() const {
-   return get_base_height() * scale().y;
-}
+float ImageComponent::get_scaled_height() const { return get_base_height() * scale().y; }
 
 ImageComponent::~ImageComponent() {}
