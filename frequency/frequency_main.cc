@@ -123,14 +123,40 @@ int main() {
       int wr_state = anim_controller_comp1->add_state("walkright");
       int sl_state = anim_controller_comp1->add_state("standleft");
       int sr_state = anim_controller_comp1->add_state("standright");
+
+      int wu_state = anim_controller_comp1->add_state("walkup");
+      int wd_state = anim_controller_comp1->add_state("walkdown");
+      int su_state = anim_controller_comp1->add_state("standup");
+      int sd_state = anim_controller_comp1->add_state("standdown");
+
       anim_controller_comp1->add_rule(wl_state, std::make_unique<KeyreleaseTransition>(sl_state, VK_LEFT));
       anim_controller_comp1->add_rule(wr_state, std::make_unique<KeyreleaseTransition>(sr_state, VK_RIGHT));
-      anim_controller_comp1->add_rule(sl_state, std::make_unique<KeypressTransition>(wl_state, VK_LEFT));
-      anim_controller_comp1->add_rule(sr_state, std::make_unique<KeypressTransition>(wr_state, VK_RIGHT));
+      anim_controller_comp1->add_rule(wu_state, std::make_unique<KeyreleaseTransition>(su_state, VK_UP));
+      anim_controller_comp1->add_rule(wd_state, std::make_unique<KeyreleaseTransition>(sd_state, VK_DOWN));
 
+
+      anim_controller_comp1->add_rule(sl_state, std::make_unique<KeypressTransition>(wl_state, VK_LEFT));
       anim_controller_comp1->add_rule(sl_state, std::make_unique<KeypressTransition>(wr_state, VK_RIGHT));
+      anim_controller_comp1->add_rule(sl_state, std::make_unique<KeypressTransition>(wu_state, VK_UP));
+      anim_controller_comp1->add_rule(sl_state, std::make_unique<KeypressTransition>(wd_state, VK_DOWN));
+
       anim_controller_comp1->add_rule(sr_state, std::make_unique<KeypressTransition>(wl_state, VK_LEFT));
-      
+      anim_controller_comp1->add_rule(sr_state, std::make_unique<KeypressTransition>(wr_state, VK_RIGHT));
+      anim_controller_comp1->add_rule(sr_state, std::make_unique<KeypressTransition>(wu_state, VK_UP));
+      anim_controller_comp1->add_rule(sr_state, std::make_unique<KeypressTransition>(wd_state, VK_DOWN));
+
+      anim_controller_comp1->add_rule(su_state, std::make_unique<KeypressTransition>(wl_state, VK_LEFT));
+      anim_controller_comp1->add_rule(su_state, std::make_unique<KeypressTransition>(wr_state, VK_RIGHT));
+      anim_controller_comp1->add_rule(su_state, std::make_unique<KeypressTransition>(wu_state, VK_UP));
+      anim_controller_comp1->add_rule(su_state, std::make_unique<KeypressTransition>(wd_state, VK_DOWN));
+
+      anim_controller_comp1->add_rule(sd_state, std::make_unique<KeypressTransition>(wl_state, VK_LEFT));
+      anim_controller_comp1->add_rule(sd_state, std::make_unique<KeypressTransition>(wr_state, VK_RIGHT));
+      anim_controller_comp1->add_rule(sd_state, std::make_unique<KeypressTransition>(wu_state, VK_UP));
+      anim_controller_comp1->add_rule(sd_state, std::make_unique<KeypressTransition>(wd_state, VK_DOWN));
+
+      //anim_comp1->set_sort_group(DrawSortGroup::DEFAULT);
+
       auto coll_comp1 = sq1->create_component<CircleCollider>(false, 50.f);
       coll_comp1->set_gravity_scalar(0.0f);
 
@@ -138,10 +164,11 @@ int main() {
       // auto coll_comp1 = sq1->create_component<AABoxCollider>(image_dims * 0.5f, false);
       // coll_comp1->set_gravity_scalar(1);
 
-      // GObject* sq2 = new GObject;
-      // sq2->init(vec2(0, 0), 0, vec2(10, 0.2), "sq2", false, false);
-      // auto image_comp2 = sq2->create_component<ImageComponent>();
-      // image_comp2->load_data("test/images/patchy.png");
+      GObject* sq2 = new GObject;
+      sq2->init(vec2(0, 0), 0, vec2(0.1, 0.1), "sq2", false, false);
+      auto image_comp2 = sq2->create_component<ImageComponent>();
+      image_comp2->load_data("test/images/patchy.png");
+      image_comp2->set_sort_group(DrawSortGroup::BACKGROUND);
       // image_dims = vec2(image_comp2->get_scaled_width(), image_comp2->get_scaled_height());
       // sq2->create_component<AABoxCollider>(image_dims * 0.5f, true);
 
@@ -149,11 +176,8 @@ int main() {
       
 
       // statemgr::get_render_extension()->get_camera()->track_object(sq1);
-
-
-
       
       statemgr::get_object_list()->add_object(sq1);
-      // statemgr::get_object_list()->add_object(sq2);
+      statemgr::get_object_list()->add_object(sq2);
    });
 }

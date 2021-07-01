@@ -3,8 +3,9 @@
 #include "engine/core/GOList.hh"
 #include "engine/core/GObject.hh"
 #include "engine/core/StateManager.hh"
-#include "engine/render/RenderComponent.hh"
 #include "engine/render/Camera.hh"
+#include "engine/render/RenderComponent.hh"
+
 
 // clang-format off
 #include <gl/glew.h>
@@ -68,14 +69,29 @@ void RenderExtension::pre_tick(float dt) {
 void RenderExtension::tick_end(float dt) {
    camera->update_tracking();
 
-   for (GObject* go : *statemgr::get_object_list()) {
-      RenderComponent const* rc = go->get_component<RenderComponent>();
-      if (rc != nullptr) {
+   std::vector<RenderComponent*> reorder_comp;
+
+   for (int i = 0; i < 5; i++) {
+      for (int j = 0; j < render_buckets[i].size(); j++) {
+         RenderComponent* rc = render_buckets[i][j];
+
          if (!camera->should_cull(rc)) {
             rc->bind_data(get_camera());
             glDrawElements(GL_TRIANGLES, rc->get_draw_count(), GL_UNSIGNED_INT, 0);
          }
+
+         const int bucket = static_cast<int>(rc->get_sort_group());
+         if (bucket != i) {
+            render_buckets[i].erase(render_buckets[i].begin() + j);
+            j--;
+            reorder_comp.push_back(rc);
+         }
       }
+   }
+
+   for (RenderComponent* rc : reorder_comp) {
+      const int bucket = static_cast<int>(rc->get_sort_group());
+      render_buckets[bucket].push_back(rc);
    }
 
    SDL_GL_SwapWindow(window);
@@ -91,6 +107,33 @@ int RenderExtension::window_height() const {
    int h;
    SDL_GetWindowSize(window, nullptr, &h);
    return h;
+}
+
+void RenderExtension::object_added(GObject* obj) {
+   RenderComponent* rc = obj->get_component<RenderComponent>();
+   if (rc != nullptr) {
+      int bucket = static_cast<int>(rc->get_sort_group());
+      render_buckets[bucket].push_back(rc);
+   }
+}
+
+void RenderExtension::object_removed(GObject* obj) {
+   RenderComponent* rc = obj->get_component<RenderComponent>();
+   if (rc != nullptr) {
+      int bucket_idx = static_cast<int>(rc->get_sort_group());
+      auto it = std::find(render_buckets[bucket_idx].begin(), render_buckets[bucket_idx].end(), rc);
+      if (it != render_buckets[bucket_idx].end()) {
+         render_buckets[bucket_idx].erase(it);
+      } else {
+         for (auto& bucket : render_buckets) {
+            auto it = std::find(bucket.begin(), bucket.end(), rc);
+            if (it != bucket.end()) {
+               bucket.erase(it);
+               break;
+            }
+         }
+      }
+   }
 }
 
 void RenderExtension::window_resize(int width, int height) {

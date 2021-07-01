@@ -7,6 +7,7 @@
 
 #include "engine/math/Vector.hh"
 
+
 class GObject;
 struct GObjectInternal;
 
@@ -31,6 +32,14 @@ public:
    float pretick_rotation() const;
    vec2 const& pretick_scale() const;
 
+   template <typename T>
+   void add_runtime_dep() {
+      static_assert(std::is_base_of_v<Component, T>, "add_runtime_dep only supports types derived from Component!");
+      runtime_dependencies.push_back(std::string(T::component_typename()));
+   }
+
+   void add_runtime_dep(std::string_view dep_typename);
+
    //////////////////////////////////////////////////////////
    // DO NOT MANUALLY OVERRIDE, LET GENERATOR HANDLE THESE //
    //////////////////////////////////////////////////////////
@@ -41,9 +50,7 @@ public:
       return cname == Component::component_typename();
    }
    virtual bool dep_assign(std::vector<Component*>& comp_ls,
-                           std::vector<Component const*>& comp_ls_old) {
-      return true;
-   }
+                           std::vector<Component const*>& comp_ls_old);
 
    //////////////////////////////////////////////////////////
    //////////////////////////////////////////////////////////
@@ -64,4 +71,7 @@ public:
 protected:
    GObject* parent;
    GObjectInternal* parent_data;
+
+private:
+   std::vector<std::string> runtime_dependencies;
 };

@@ -10,6 +10,7 @@
 #include "engine/physics/PhysicsExtension.hh"
 #include "engine/render/RenderExtension.hh"
 
+
 namespace statemgr {
 PhysicsExtension* physics_ext;
 RenderExtension* render_ext;
@@ -155,6 +156,7 @@ void add_extension(Extension* ext) { extension_list.emplace_back(ext); }
 
 PhysicsExtension* get_physics_extension() { return physics_ext; }
 RenderExtension* get_render_extension() { return render_ext; }
+std::vector<Extension*>& get_extension_list() { return extension_list; }
 
 GOList* get_object_list() { return &object_list; }
 

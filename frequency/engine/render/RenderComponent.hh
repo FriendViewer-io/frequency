@@ -10,6 +10,14 @@ class RenderMeshResource;
 class ShaderResource;
 class Camera;
 
+enum DrawSortGroup : int {
+   BACKGROUND = 0,
+   FOREGROUND_BACK = 1,
+   DEFAULT = 2,
+   FOREGROUND_FRONT = 3,
+   TOPLEVEL = 4,
+};
+
 class RenderComponent : public Component {
    DEFINE_COMPONENT_INLINE_NODEP(RenderComponent, Component)
 
@@ -24,9 +32,13 @@ public:
    int get_draw_count() const;
    virtual aabb const& get_render_bounds() const = 0;
 
+   void set_sort_group(DrawSortGroup dsg) { sort_group = dsg; }
+   DrawSortGroup get_sort_group() const { return sort_group; }
+
    virtual ~RenderComponent() {}
 
 protected:
    Token<RenderMeshResource> mesh;
    Token<ShaderResource> shader;
+   DrawSortGroup sort_group = DEFAULT;
 };

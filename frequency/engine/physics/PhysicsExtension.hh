@@ -13,13 +13,16 @@ public:
    PhysicsExtension(aabb world_bounds, vec2 cell_dims);
 
    void extension_init() override {}
-   void pre_tick(float dt) override;
+   void pre_tick(float dt) override {}
    // Detect [& solve collisions]
    void pre_post_tick(float dt) override;
-   void tick_end(float dt) override { colliders.clear(); }
+   void tick_end(float dt) override {}
    void extension_reset() override {}
    vec2 const& get_gravity() const { return gravity; }
    void set_gravity(vec2 const& gravity) { this->gravity = gravity; }
+
+   void object_added(GObject* obj) override;
+   void object_removed(GObject* obj) override;
 
    std::string_view extension_name() const { return "PhysicsExtension"; }
 

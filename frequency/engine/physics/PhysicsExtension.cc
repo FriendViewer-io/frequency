@@ -13,19 +13,6 @@ PhysicsExtension::PhysicsExtension(aabb world_bounds, vec2 cell_dims) : gravity(
    cell_partition = new CellPartition(world_bounds, cell_dims);
 }
 
-// Collect all GObjects with a ColliderComponent
-// and add them to collider_objects
-void PhysicsExtension::pre_tick(float dt) {
-   GOList* object_list = statemgr::get_object_list();
-
-   for (GObject* go : *object_list) {
-      ColliderComponent* cc = go->get_component<ColliderComponent>();
-      if (cc != nullptr) {
-         colliders.push_back(cc);
-      }
-   }
-}
-
 void PhysicsExtension::pre_post_tick(float dt) {
    std::vector<ColliderComponent*> possible_collisions;
    for (int i = 0; i < colliders.size(); i++) {
@@ -51,6 +38,22 @@ void PhysicsExtension::pre_post_tick(float dt) {
             cc1->get_parent()->commit();
             cc2->get_parent()->commit();
          }
+      }
+   }
+}
+
+void PhysicsExtension::object_added(GObject* obj) {
+   ColliderComponent* cc = obj->get_component<ColliderComponent>();
+   if (cc != nullptr) {
+      colliders.push_back(cc);
+   }
+}
+
+void PhysicsExtension::object_removed(GObject* obj) {
+   for (int i = 0; i < colliders.size(); i++) {
+      if (obj == colliders[i]->get_parent()) {
+         colliders.erase(colliders.begin() + i);
+         break;
       }
    }
 }

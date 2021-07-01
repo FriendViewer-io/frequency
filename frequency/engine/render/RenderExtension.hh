@@ -1,12 +1,16 @@
 #pragma once
 
+#include <array>
 #include <memory>
+#include <vector>
 
 #include "engine/core/Extension.hh"
 
 struct SDL_Renderer;
 struct SDL_Window;
 class Camera;
+class GObject;
+class RenderComponent;
 
 class RenderExtension : public Extension {
 public:
@@ -29,6 +33,9 @@ public:
    int window_height() const;
    void window_resize(int width, int height);
 
+   void object_added(GObject* obj) override;
+   void object_removed(GObject* obj) override;
+
    Camera* get_camera() { return camera.get(); }
    Camera const* get_camera() const { return camera.get(); }
 
@@ -37,4 +44,6 @@ private:
    SDL_Window* window;
    void* gl_ctx;
    std::unique_ptr<Camera> camera;
+
+   std::array<std::vector<RenderComponent*>, 5> render_buckets;
 };

@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 class GOList;
 class Extension;
@@ -29,6 +30,7 @@ void core_game_loop(float time_delta, std::function<void()> const& post_extensio
 void add_extension(Extension* ext);
 PhysicsExtension* get_physics_extension();
 RenderExtension* get_render_extension();
+std::vector<Extension*>& get_extension_list();
 GOList* get_object_list();
 
-}
+}  // namespace statemgr
