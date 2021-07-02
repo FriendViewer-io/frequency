@@ -9,11 +9,12 @@
 #include "engine/math/Vector.hh"
 #include "engine/physics/PhysicsExtension.hh"
 #include "engine/render/RenderExtension.hh"
-
+#include "engine/input/InputExtension.hh"
 
 namespace statemgr {
 PhysicsExtension* physics_ext;
 RenderExtension* render_ext;
+InputExtension* input_ext;
 EngineState game_state = EngineState::UNINITIALIZED;
 GOList object_list;
 std::vector<Extension*> extension_list;
@@ -68,6 +69,9 @@ void core_game_loop(float time_delta, std::function<void()> const& post_extensio
 
    render_ext = new RenderExtension();
    add_extension(render_ext);
+
+   input_ext = new InputExtension();
+   add_extension(input_ext);
 
    for (Extension* ext : extension_list) {
       ext->extension_init();
@@ -156,6 +160,7 @@ void add_extension(Extension* ext) { extension_list.emplace_back(ext); }
 
 PhysicsExtension* get_physics_extension() { return physics_ext; }
 RenderExtension* get_render_extension() { return render_ext; }
+InputExtension* get_input_extension() { return input_ext; }
 std::vector<Extension*>& get_extension_list() { return extension_list; }
 
 GOList* get_object_list() { return &object_list; }

@@ -35,6 +35,7 @@
 #include "engine/core/ComponentGen.hh"
 #include "engine/render/TransitionRule.hh"
 #include "engine/render/AnimationController.hh"
+#include "engine/input/InputExtension.hh"
 
 #include <Windows.h>
 
@@ -107,6 +108,25 @@ struct KeyreleaseTransition : public TransitionRule {
 
 
 int main() {
+   SDL_Init(SDL_INIT_EVERYTHING);
+
+   SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 500, 500, 0);
+
+   InputExtension ext;
+
+   while (true) {
+      ext.pre_tick(0);
+
+
+      if (ext.get_key_state(SDL_SCANCODE_RIGHT) == KeyState::RELEASE) {
+         printf("<RIGHT> is released.\n");
+      }
+      if (ext.get_key_state(SDL_SCANCODE_RIGHT) == KeyState::PRESS) {
+         printf("<RIGHT> is pressed.\n");
+      }
+   }
+
+   /*
    statemgr::core_game_loop(1.f / 60.f, [] {
       GObject* sq1 = new GObject;
       sq1->init(vec2(0, 0), 0, vec2(5, 5), "sq1", false, false);
@@ -180,4 +200,5 @@ int main() {
       statemgr::get_object_list()->add_object(sq1);
       statemgr::get_object_list()->add_object(sq2);
    });
+   */
 }
